@@ -210,9 +210,10 @@ td.num, th.num { text-align: right; white-space: nowrap; }
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
-<script src="logic.js"></script>
+<script src="logic.js?v=0.1.2"></script>
 <script>
 'use strict';
+const VERSION = '0.1.2';
 const C = window.WARMUP_CONFIG || {};
 const CONFIGURED = /^https?:\/\//.test(C.url || '') && C.key && !/^PASTE/.test(C.key);
 const sb = CONFIGURED ? window.supabase.createClient(C.url, C.key) : null;
@@ -665,6 +666,7 @@ const Teacher = {
         <div class="brand"><span class="dot">W</span><span class="hide-sm">Warm-Ups</span></div>
         <nav>${nav.map(([k, l]) => `<a href="#/teacher${k ? '/' + k : ''}" class="${active === k ? 'on' : ''}">${l}</a>`).join('')}</nav>
         <span class="spacer"></span>
+        <span class="small muted">v${VERSION}</span>
         <button class="link" data-act="signout">Sign out</button>
       </div>
       <div class="wrap ${wide ? 'wide' : ''}">${body}</div>`,
