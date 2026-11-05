@@ -8,11 +8,12 @@ Adaptive class warm-ups. First module: Spanish sentence builder — students rea
 ## One-time setup (about 10 minutes)
 
 1. **Supabase project.** supabase.com → New project (a new one, separate from JARVIS).
-2. **Database.** SQL Editor → New query → paste all of `schema.sql` → Run.
-3. **Teacher login.** Authentication → Users → Add user → Create new user.
-   - Email: `spanish@warmup.local` (or a real email). Teachers can sign in with just `spanish`.
+2. **Database.** SQL Editor → New query → paste all of `schema.sql` → Run. Then do the same with `update-0.2.sql`.
+3. **Teacher logins.** Authentication → Users → Add user → Create new user, once per teacher.
+   - Email: `lastname@warmup.local` (or a real email). They sign in with just `lastname`.
    - Password: anything. Tick **Auto Confirm User**.
-   - One login per teacher; each teacher sees only their own classes, units and results.
+   - On first sign-in each teacher sets the name students see (e.g. "Sra. López").
+   - Classes, rosters and results belong to one teacher. **Units are shared**: every teacher can use and edit them; only the teacher who made a unit can delete it, and not once it's been used in a warm-up.
 4. **Turn off public sign-ups.** Authentication → Sign In / Providers → turn off "Allow new users to sign up".
 5. **Connect the site.** Project Settings → API. Copy the Project URL and the anon / publishable key into `config.js`.
 6. **Publish.** GitHub repo → Settings → Pages → Deploy from branch → `main` / root.
@@ -24,6 +25,7 @@ Adaptive class warm-ups. First module: Spanish sentence builder — students rea
 3. **Warm-ups** → pick class + unit, set the goal (correct answers), time limit (minutes) and starting level → Save for later.
 4. When class starts → **Open now**. Students waiting on the PIN screen start automatically.
 5. **Close warm-up** at the end. Results stay on that warm-up's page; tap a student to see every answer.
+6. **Classes → Results** shows every warm-up the class has done: students down the side, days across the top. Tap a day for its full results. "Copy for spreadsheet" copies the grid (correct answers per day, "absent" if they didn't join).
 
 ### How a student finishes
 Whichever comes first: they hit the goal, their time runs out (counted from when *they* joined), or the teacher closes it.
@@ -60,4 +62,5 @@ Aim for at least 3 questions per level so the difficulty steps have room to work
 - `logic.js` — grading, difficulty, question picking, sheet import
 - `config.js` — Supabase connection
 - `schema.sql` — database tables, security rules, student functions
+- `update-0.2.sql` — teacher profiles, shared units, class results archive
 - `sample-unit.csv` — sample unit / template

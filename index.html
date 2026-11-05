@@ -96,6 +96,7 @@ input:focus, select:focus, textarea:focus, button:focus-visible { outline: 3px s
 .class-btn { text-align: left; padding: 16px 18px; border-radius: 14px; border: 1px solid var(--line);
   background: var(--surface); font-weight: 800; font-size: 1.1rem; box-shadow: var(--shadow); min-height: 60px; }
 .class-btn:hover { border-color: var(--accent); }
+.class-btn .tname { display: block; font-size: .88rem; font-weight: 700; color: var(--muted); }
 .pin-dots { display: flex; gap: 14px; justify-content: center; margin: 18px 0 22px; }
 .pin-dots i { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--tile-edge); }
 .pin-dots i.on { background: var(--accent); border-color: var(--accent); }
@@ -189,6 +190,21 @@ td.num, th.num { text-align: right; white-space: nowrap; }
 .tiles4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
 .status { font-weight: 800; white-space: nowrap; }
 .status.working { color: var(--good); } .status.idle { color: var(--warn); } .status.done { color: var(--accent); }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin: 0 0 18px; }
+.tabs a { text-decoration: none; font-weight: 800; color: var(--muted); padding: 10px 14px; border-bottom: 3px solid transparent; margin-bottom: -1px; }
+.tabs a.on { color: var(--accent); border-bottom-color: var(--accent); }
+.grid-wrap { max-height: 70vh; }
+.grid th, .grid td { white-space: nowrap; }
+.grid .sticky { position: sticky; left: 0; background: var(--surface); z-index: 1; box-shadow: 1px 0 0 var(--line); }
+.grid thead th { position: sticky; top: 0; z-index: 2; }
+.grid thead th.sticky { z-index: 3; background: var(--surface-2); }
+.grid th.day a { color: var(--ink); text-decoration: none; font-weight: 900; text-transform: none; letter-spacing: 0; font-size: .9rem; }
+.grid th.day span { display: block; font-weight: 600; text-transform: none; letter-spacing: 0; max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
+.grid td.cell { text-align: center; font-weight: 800; min-width: 74px; }
+.grid td.cell span { display: block; font-size: .78rem; font-weight: 600; color: var(--muted); }
+.grid td.hit { background: var(--good-soft); color: var(--good); }
+.grid td.part { background: var(--warn-soft); }
+.grid td.miss { color: var(--muted); background: var(--surface-2); }
 .pin-cards { display: none; }
 @media print {
   body { background: #fff; color: #000; }
@@ -210,10 +226,10 @@ td.num, th.num { text-align: right; white-space: nowrap; }
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
-<script src="logic.js?v=0.1.2"></script>
+<script src="logic.js?v=0.2"></script>
 <script>
 'use strict';
-const VERSION = '0.1.2';
+const VERSION = '0.2';
 const C = window.WARMUP_CONFIG || {};
 const CONFIGURED = /^https?:\/\//.test(C.url || '') && C.key && !/^PASTE/.test(C.key);
 const sb = CONFIGURED ? window.supabase.createClient(C.url, C.key) : null;
@@ -343,7 +359,7 @@ const Student = {
       <div class="brand"><span class="dot">W</span> Warm-Ups</div>
       <h1>Pick your class</h1>
       <div class="class-list">
-        ${list.map(c => `<button class="class-btn" data-act="pick" data-id="${esc(c.id)}" data-name="${esc(c.name)}">${esc(c.name)}</button>`).join('')
+        ${list.map(c => `<button class="class-btn" data-act="pick" data-id="${esc(c.id)}" data-name="${esc(c.name)}">${esc(c.name)}${c.teacher_name ? `<span class="tname">${esc(c.teacher_name)}</span>` : ''}</button>`).join('')
           || '<p class="muted">No classes yet. Your teacher needs to set one up.</p>'}
       </div>
       <p class="center small" style="margin-top:36px"><a href="#/teacher">Teacher sign-in</a></p>
@@ -649,10 +665,13 @@ const Teacher = {
     const { data } = await sb.auth.getSession();
     this.user = data.session ? data.session.user : null;
     if (!this.user) return this.login();
-    const [, , page, id] = h.split('/');
+    const [, , page, id, sub] = h.split('/');
     try {
+      await this.loadTeachers();
+      if (!this.me || page === 'profile') return this.profile();
       if (page === 'classes') return await this.classes();
-      if (page === 'class' && id) return await this.classPage(id);
+      if (page === 'class' && id && sub === 'roster') return await this.classPage(id);
+      if (page === 'class' && id) return await this.classResults(id);
       if (page === 'units') return await this.units();
       if (page === 'unit' && id) return await this.unitPage(id);
       if (page === 'session' && id) return await this.sessionPage(id);
@@ -666,11 +685,48 @@ const Teacher = {
         <div class="brand"><span class="dot">W</span><span class="hide-sm">Warm-Ups</span></div>
         <nav>${nav.map(([k, l]) => `<a href="#/teacher${k ? '/' + k : ''}" class="${active === k ? 'on' : ''}">${l}</a>`).join('')}</nav>
         <span class="spacer"></span>
-        <span class="small muted">v${VERSION}</span>
+        <a href="#/teacher/profile" class="small" style="font-weight:800;text-decoration:none" title="Edit your name">${esc(this.me ? this.me.display_name : '')}</a>
+        <span class="small muted hide-sm">v${VERSION}</span>
         <button class="link" data-act="signout">Sign out</button>
       </div>
       <div class="wrap ${wide ? 'wide' : ''}">${body}</div>`,
       Object.assign({ signout: async () => { await sb.auth.signOut(); location.hash = '#/teacher'; route(); } }, handlers));
+  },
+
+  // All teacher names (for "by Sra. López" on shared units) + my own profile.
+  async loadTeachers() {
+    const list = await q(sb.from('teachers').select('id,display_name'));
+    this.names = new Map(list.map(t => [t.id, t.display_name]));
+    this.me = list.find(t => t.id === this.user.id) || null;
+  },
+
+  byline(teacherId) {
+    if (teacherId === this.user.id) return 'you';
+    return this.names.get(teacherId) || 'another teacher';
+  },
+
+  profile() {
+    const first = !this.me;
+    const body = `
+      <h1>${first ? 'Welcome! What should students call you?' : 'Your name'}</h1>
+      <form class="card stack" data-act="save" style="max-width:520px">
+        <label class="field"><span>Shown to students next to your classes, and to other teachers on shared units</span>
+          <input type="text" name="dn" maxlength="60" placeholder="e.g. Sra. López" value="${esc(this.me ? this.me.display_name : '')}" required></label>
+        <div class="row"><button class="btn primary" type="submit">Save</button></div>
+      </form>`;
+    const save = async f => {
+      const dn = f.dn.value.trim();
+      if (!dn) return;
+      try {
+        await q(sb.from('teachers').upsert({ id: this.user.id, display_name: dn }));
+        toast('Saved'); location.hash = '#/teacher'; route();
+      } catch (e) { fail(e); }
+    };
+    if (first) {
+      render(`<div class="wrap" style="max-width:560px"><div class="brand"><span class="dot">W</span> Warm-Ups</div>${body}</div>`, { save });
+    } else {
+      this.shell('', body, { save });
+    }
   },
 
   login() {
@@ -699,7 +755,7 @@ const Teacher = {
   async home() {
     const [classes, units, sessions] = await Promise.all([
       q(sb.from('classes').select('id,name').order('name')),
-      q(sb.from('units').select('id,name').order('created_at', { ascending: false })),
+      q(sb.from('units').select('id,name,teacher_id').order('name')),
       q(sb.from('sessions').select('*, classes(name), units(name)').order('created_at', { ascending: false }).limit(60))
     ]);
     const group = st => sessions.filter(s => s.status === st);
@@ -722,7 +778,7 @@ const Teacher = {
         <h2>Prepare a warm-up</h2>
         <div class="grid2">
           <label class="field"><span>Class</span><select name="cls">${classes.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></label>
-          <label class="field"><span>Unit</span><select name="unit">${units.map(u => `<option value="${u.id}">${esc(u.name)}</option>`).join('')}</select></label>
+          <label class="field"><span>Unit</span><select name="unit">${units.map(u => `<option value="${u.id}">${esc(u.name)}${u.teacher_id === this.user.id ? '' : ' \u2014 by ' + esc(this.byline(u.teacher_id))}</option>`).join('')}</select></label>
         </div>
         <label class="field"><span>Name (optional)</span><input type="text" name="title" placeholder="e.g. Warm-up ${esc(today)}"></label>
         <div class="grid2">
@@ -736,7 +792,8 @@ const Teacher = {
       </form>` : `<div class="notice">First, add a <a href="#/teacher/classes">class</a> and a <a href="#/teacher/units">unit</a>.</div>`}
       ${group('open').length ? `<div class="section-title">Open now</div><div class="list">${group('open').map(item).join('')}</div>` : ''}
       ${group('ready').length ? `<div class="section-title">Ready to open</div><div class="list">${group('ready').map(item).join('')}</div>` : ''}
-      ${group('closed').length ? `<div class="section-title">Finished</div><div class="list">${group('closed').map(item).join('')}</div>` : ''}
+      ${group('closed').length ? `<div class="section-title">Recently finished</div><div class="list">${group('closed').slice(0, 6).map(item).join('')}</div>
+        <p class="small muted">Every past warm-up is saved under <a href="#/teacher/classes">Classes \u2192 Results</a>.</p>` : ''}
     `, {
       createOpen: el => {
         const f = el.closest('form');
@@ -880,7 +937,7 @@ const Teacher = {
   drawSession(s, roster, questions, parts) {
     const pill = `<span class="pill ${s.status}">${s.status === 'open' ? 'Open' : s.status === 'ready' ? 'Not open yet' : 'Closed'}</span>`;
     this.shell('', `
-      <p class="small"><a href="#/teacher">← Warm-ups</a></p>
+      <p class="small"><a href="#/teacher">← Warm-ups</a> · <a href="#/teacher/class/${s.class_id}">All results for ${esc(s.classes?.name || 'this class')}</a></p>
       <div class="row"><h1 style="margin:4px 0">${esc(s.title || s.units?.name || 'Warm-up')}</h1>${pill}</div>
       <p class="muted">${esc(s.classes?.name || '')} · ${esc(s.units?.name || '')} · ${this.settingsText(s)}</p>
       <div class="row" style="margin:14px 0">
@@ -931,14 +988,15 @@ const Teacher = {
       <div class="list" style="margin-top:16px">
         ${list.map(c => `<div class="item"><a class="t" href="#/teacher/class/${c.id}" style="flex:1">${c.name ? esc(c.name) : '<span class="muted">(no name)</span>'}</a>
           <span class="muted small">${c.students?.[0]?.count ?? 0} students</span>
-          <a class="btn" href="#/teacher/class/${c.id}" style="text-decoration:none">Roster</a>
+          <a class="btn" href="#/teacher/class/${c.id}" style="text-decoration:none">Results</a>
+          <a class="btn" href="#/teacher/class/${c.id}/roster" style="text-decoration:none">Roster</a>
           <button class="btn danger" data-act="delcls" data-id="${c.id}" data-name="${esc(c.name || 'this unnamed class')}">Delete</button></div>`).join('')
           || '<p class="muted">No classes yet.</p>'}
       </div>`, {
       add: async f => {
         const name = f.name.value.trim();
         if (!name) return;
-        try { const c = await q(sb.from('classes').insert({ name }).select().single()); location.hash = '#/teacher/class/' + c.id; }
+        try { const c = await q(sb.from('classes').insert({ name }).select().single()); location.hash = '#/teacher/class/' + c.id + '/roster'; }
         catch (e) { fail(e); }
       },
       delcls: async el => {
@@ -946,6 +1004,73 @@ const Teacher = {
         try { await q(sb.from('classes').delete().eq('id', el.dataset.id)); this.classes(); } catch (e) { fail(e); }
       }
     });
+  },
+
+  classTabs(id, on) {
+    return `<div class="tabs"><a href="#/teacher/class/${id}" class="${on === 'results' ? 'on' : ''}">Results</a>
+      <a href="#/teacher/class/${id}/roster" class="${on === 'roster' ? 'on' : ''}">Roster &amp; PINs</a></div>`;
+  },
+
+  // Every warm-up this class has done, one column per day.
+  async classResults(id) {
+    const [c, students, hist] = await Promise.all([
+      q(sb.from('classes').select('id,name').eq('id', id).single()),
+      q(sb.from('students').select('id,name').eq('class_id', id).order('name')),
+      rpc('class_history', { p_class: id })
+    ]);
+    const sessions = hist.sessions;
+    const res = new Map(hist.results.map(r => [r.session_id + '|' + r.student_id, r]));
+    const day = iso => new Date(iso).toLocaleDateString([], { month: 'short', day: 'numeric' });
+    const wk = iso => new Date(iso).toLocaleDateString([], { weekday: 'short' });
+
+    const cell = (s, st) => {
+      const r = res.get(s.id + '|' + st.id);
+      if (!r) return { html: `<td class="cell miss" title="Didn’t join">—</td>`, tsv: 'absent' };
+      const acc = r.total ? Math.round(100 * r.correct / r.total) : null;
+      const hit = r.finish === 'target';
+      const cls = hit ? 'hit' : (s.target && r.correct < s.target ? 'part' : '');
+      const main = s.target ? `${hit ? '✓ ' : ''}${r.correct}/${s.target}` : `${r.correct} ✓`;
+      return {
+        html: `<td class="cell ${cls}" title="${r.correct} correct of ${r.total} answered">${main}<span>${acc === null ? 'no answers' : acc + '%'}</span></td>`,
+        tsv: String(r.correct)
+      };
+    };
+
+    const rows = students.map(st => {
+      const cells = sessions.map(s => cell(s, st));
+      const joined = sessions.filter(s => res.has(s.id + '|' + st.id));
+      let cor = 0, tot = 0;
+      joined.forEach(s => { const r = res.get(s.id + '|' + st.id); cor += r.correct; tot += r.total; });
+      return { st, cells, joined: joined.length, acc: tot ? Math.round(100 * cor / tot) : null };
+    });
+
+    const table = sessions.length ? `<div class="table-wrap grid-wrap"><table class="grid">
+      <thead><tr><th class="sticky">Student</th><th class="num">Days</th><th class="num">Avg</th>
+        ${sessions.map(s => `<th class="day"><a href="#/teacher/session/${s.id}">${wk(s.date)} ${day(s.date)}</a>
+          <span>${esc(s.title || s.unit)}${s.status === 'open' ? ' · <b>live</b>' : ''}</span></th>`).join('')}</tr></thead>
+      <tbody>${rows.map(r => `<tr><td class="sticky"><b>${esc(r.st.name)}</b></td>
+        <td class="num">${r.joined}/${sessions.length}</td>
+        <td class="num">${r.acc === null ? '—' : r.acc + '%'}</td>
+        ${r.cells.map(x => x.html).join('')}</tr>`).join('')}</tbody>
+    </table></div>
+    <p class="small muted">Each day shows correct answers / goal and accuracy. ✓ = hit the goal. — = didn’t join. Tap a date for that day’s full results.</p>`
+      : '<p class="muted">No warm-ups yet. Results show up here as soon as one is opened.</p>';
+
+    this.shell('classes', `
+      <p class="small"><a href="#/teacher/classes">← Classes</a></p>
+      <h1>${esc(c.name)}</h1>
+      ${this.classTabs(id, 'results')}
+      <div class="row" style="margin:6px 0 12px"><h2 style="margin:0">${sessions.length} warm-up${sessions.length === 1 ? '' : 's'}</h2>
+        <span class="spacer"></span>${sessions.length ? '<button class="btn" data-act="copy">Copy for spreadsheet</button>' : ''}</div>
+      ${table}
+    `, {
+      copy: async () => {
+        const head = ['Student'].concat(sessions.map(s => `${day(s.date)}${s.target ? ' (goal ' + s.target + ')' : ''}`)).join('\t');
+        const body = rows.map(r => [r.st.name].concat(r.cells.map(x => x.tsv)).join('\t')).join('\n');
+        try { await navigator.clipboard.writeText(head + '\n' + body); toast('Copied — paste into a spreadsheet'); }
+        catch (e) { toast('Couldn’t copy on this device'); }
+      }
+    }, true);
   },
 
   async classPage(id) {
@@ -956,6 +1081,7 @@ const Teacher = {
     this.shell('classes', `
       <p class="small"><a href="#/teacher/classes">← Classes</a></p>
       <h1>${esc(c.name)}</h1>
+      ${this.classTabs(id, 'roster')}
       <form class="card stack" data-act="add">
         <h2>Add students</h2>
         <label class="field"><span>One name per line — each gets a 4-digit PIN</span>
@@ -1036,7 +1162,7 @@ const Teacher = {
   },
 
   async units() {
-    const list = await q(sb.from('units').select('id,name,created_at,questions(count)').order('created_at', { ascending: false }));
+    const list = await q(sb.from('units').select('id,name,teacher_id,created_at,questions(count)').order('name'));
     this.shell('units', `
       <h1>Units</h1>
       <form class="card stack" data-act="import">
@@ -1051,7 +1177,7 @@ const Teacher = {
       </form>
       <div class="list" style="margin-top:16px">
         ${list.map(u => `<div class="item"><a class="t" href="#/teacher/unit/${u.id}" style="flex:1">${esc(u.name)}</a>
-          <span class="muted small">${u.questions?.[0]?.count ?? 0} questions</span></div>`).join('') || '<p class="muted">No units yet.</p>'}
+          <span class="muted small">${u.questions?.[0]?.count ?? 0} questions · by ${esc(this.byline(u.teacher_id))}</span></div>`).join('') || '<p class="muted">No units yet.</p>'}
       </div>`, {
       check: async () => { const f = app.querySelector('form'); document.getElementById('preview').innerHTML = this.previewHtml(await this.readImport(f)); },
       import: async f => {
@@ -1082,14 +1208,14 @@ const Teacher = {
 
   async unitPage(id) {
     const [u, qs] = await Promise.all([
-      q(sb.from('units').select('id,name').eq('id', id).single()),
+      q(sb.from('units').select('id,name,teacher_id').eq('id', id).single()),
       q(sb.from('questions').select('*').eq('unit_id', id).order('level').order('sort'))
     ]);
     const n = this.levelCounts(qs);
     this.shell('units', `
       <p class="small"><a href="#/teacher/units">← Units</a></p>
       <h1>${esc(u.name)}</h1>
-      <p class="muted">${qs.length} questions · ${n.map((x, i) => `L${i + 1}: ${x}`).join(' · ')}</p>
+      <p class="muted">By ${esc(this.byline(u.teacher_id))} · ${qs.length} questions · ${n.map((x, i) => `L${i + 1}: ${x}`).join(' · ')}</p>
       <div class="table-wrap"><table>
         <tr><th class="num">Lvl</th><th>Spanish</th><th>English</th><th>Also accept</th><th>Decoys <span class="small">(L4–5)</span></th><th>Word tips</th></tr>
         ${qs.map(x => `<tr><td class="num">${x.level}</td><td>${esc(x.prompt)}</td><td>${esc(x.answer)}</td>
@@ -1100,7 +1226,8 @@ const Teacher = {
         <form data-act="replace" style="margin-top:12px" class="stack">${this.importerHtml(false)}
           <div class="row"><button class="btn primary" type="submit">Replace questions</button></div></form>
       </details>
-      <p style="margin-top:24px"><button class="btn danger" data-act="del">Delete unit</button></p>
+      ${u.teacher_id === this.user.id ? '<p style="margin-top:24px"><button class="btn danger" data-act="del">Delete unit</button></p>'
+        : `<p class="small muted" style="margin-top:24px">Shared by ${esc(this.byline(u.teacher_id))}. Any teacher can edit the questions; only ${esc(this.byline(u.teacher_id))} can delete it.</p>`}
     `, {
       replace: async f => {
         const res = await this.readImport(f);
@@ -1114,8 +1241,12 @@ const Teacher = {
         } catch (e) { fail(e); }
       },
       del: async () => {
-        if (!confirm(`Delete ${u.name}? Warm-ups that used it (and their results) go too.`)) return;
-        try { await q(sb.from('units').delete().eq('id', id)); location.hash = '#/teacher/units'; } catch (e) { fail(e); }
+        if (!confirm(`Delete ${u.name}?`)) return;
+        try { await q(sb.from('units').delete().eq('id', id)); location.hash = '#/teacher/units'; }
+        catch (e) {
+          if (e.code === '23503') toast('This unit has been used in warm-ups, so it stays to keep those results.');
+          else fail(e);
+        }
       }
     });
   }
