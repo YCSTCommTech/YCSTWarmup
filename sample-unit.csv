@@ -1,0 +1,21 @@
+level,spanish,english,also_accept,decoys,glossary,notes
+1,Tengo un perro.,I have a dog,,cat | has,tengo = I have (from tener) | perro = dog (masc. noun),
+1,La casa es grande.,The house is big,,small | home,casa = house (fem. noun) | es = is (from ser) | grande = big,
+1,Mi madre es alta.,My mother is tall,,short | father,mi = my | madre = mother | alta = tall (fem.; masc. = alto),
+1,El gato es negro.,The cat is black,,dog | white,gato = cat (masc. noun) | negro = black,
+2,Mi hermano tiene doce años.,My brother is twelve years old,My brother is twelve,has | sister,hermano = brother | tiene = has (from tener) | doce = twelve | años = years,"Spanish says you ""have"" years: tener ___ años"
+2,Vivimos en una casa pequeña.,We live in a small house,,big | lives,vivimos = we live (from vivir) | pequeña = small (fem.),
+2,Mis abuelos son simpáticos.,My grandparents are nice,,parents | is,abuelos = grandparents | son = are (from ser) | simpáticos = nice / friendly,
+2,La cocina está limpia.,The kitchen is clean,,dirty | bathroom,cocina = kitchen | está = is (from estar) | limpia = clean (fem.),Estar for conditions that can change
+3,Mi hermana mayor estudia en la universidad.,My older sister studies at the university,My older sister studies at university,younger | brother,hermana = sister | mayor = older | estudia = studies (from estudiar),
+3,Hay tres dormitorios en nuestra casa.,There are three bedrooms in our house,,is | your,hay = there is / there are | dormitorios = bedrooms | nuestra = our (fem.),
+3,Mi padre cocina la cena los domingos.,My father cooks dinner on Sundays,,lunch | Saturdays,padre = father | cocina = cooks (from cocinar) | cena = dinner | domingos = Sundays,Los + day = every (day)
+3,Los niños juegan en el jardín.,The children play in the garden,,plays | house,niños = children | juegan = they play (from jugar) | jardín = garden / yard,
+4,Mi tía y mi tío viven cerca de nosotros.,My aunt and my uncle live near us,My aunt and uncle live near us,lives | far | we,tía = aunt | tío = uncle | viven = they live (from vivir) | cerca de = near | nosotros = us / we,
+4,No me gusta limpiar mi cuarto.,I don't like to clean my room,I don't like cleaning my room,cleaning | likes | your,me gusta = I like (lit. it pleases me) | limpiar = to clean | cuarto = room,
+4,Mi primo es más alto que yo.,My cousin is taller than me,My cousin is taller than I,I | more | tall,primo = cousin (masc.) | más alto que = taller than | yo = I / me,
+4,Nuestra sala tiene un sofá azul.,Our living room has a blue sofa,Our living room has a blue couch,couch | house | blues,sala = living room | tiene = has | sofá = sofa / couch | azul = blue,
+5,"Cuando era niño, vivía con mis abuelos.",When I was a child I lived with my grandparents,When I was a kid I lived with my grandparents,kid | live | parents,era = I was (imperfect of ser) | niño = child | vivía = I used to live / I lived (imperfect),Imperfect = background or habitual past
+5,Mi madre quiere que yo lave los platos.,My mother wants me to wash the dishes,,I | washes | want,quiere que = wants (that) | lave = wash (subjunctive of lavar) | platos = dishes / plates,Querer que + subjunctive
+5,"Si tuviera más espacio, compraría un perro.",If I had more space I would buy a dog,,will | have | cat,tuviera = I had (past subjunctive of tener) | espacio = space | compraría = I would buy (conditional),Si + past subjunctive → conditional
+5,Hace dos años que vivimos en esta casa.,We have lived in this house for two years,,ago | since | live,hace ... que = for (a length of time) | vivimos = we live | esta = this (fem.),Hace + time + que + present = have been doing for

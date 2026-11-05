@@ -1,0 +1,1116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Warm-Ups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f6f3ec; --surface: #ffffff; --surface-2: #fbf9f4; --ink: #1c2826; --muted: #5b6a67;
+  --line: #e2dccf; --accent: #0f766e; --accent-ink: #ffffff; --accent-soft: #d9f1ed;
+  --good: #15803d; --good-soft: #dcfce7; --bad: #c2410c; --bad-soft: #ffedd5;
+  --warn: #a16207; --warn-soft: #fef3c7;
+  --tile: #ffffff; --tile-edge: #cfc6b4; --tile-ink: #1c2826;
+  --shadow: 0 1px 2px rgba(28,40,38,.06), 0 6px 20px rgba(28,40,38,.06);
+  --radius: 16px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111715; --surface: #1a2220; --surface-2: #151c1a; --ink: #e7eeeb; --muted: #9aaca7;
+    --line: #2b3734; --accent: #2dd4bf; --accent-ink: #04201c; --accent-soft: #12393450;
+    --good: #4ade80; --good-soft: #14321f; --bad: #fb923c; --bad-soft: #3a2312;
+    --warn: #facc15; --warn-soft: #3a3110;
+    --tile: #222c29; --tile-edge: #3b4a46; --tile-ink: #e7eeeb;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111715; --surface: #1a2220; --surface-2: #151c1a; --ink: #e7eeeb; --muted: #9aaca7;
+  --line: #2b3734; --accent: #2dd4bf; --accent-ink: #04201c; --accent-soft: #12393450;
+  --good: #4ade80; --good-soft: #14321f; --bad: #fb923c; --bad-soft: #3a2312;
+  --warn: #facc15; --warn-soft: #3a3110;
+  --tile: #222c29; --tile-edge: #3b4a46; --tile-ink: #e7eeeb;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: Nunito, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 17px; line-height: 1.45; -webkit-tap-highlight-color: transparent;
+  min-height: 100dvh;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--accent); }
+.wrap { max-width: 720px; margin: 0 auto; padding: 20px 16px 48px; }
+.wrap.wide { max-width: 1100px; }
+h1 { font-size: 1.7rem; line-height: 1.2; margin: 8px 0 18px; font-weight: 900; letter-spacing: -.01em; }
+h2 { font-size: 1.2rem; margin: 0 0 12px; font-weight: 800; }
+.muted { color: var(--muted); }
+.small { font-size: .88rem; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 1.05rem; color: var(--accent); }
+.brand .dot { width: 30px; height: 30px; border-radius: 9px; background: var(--accent); color: var(--accent-ink);
+  display: grid; place-items: center; font-size: .95rem; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 18px; box-shadow: var(--shadow); }
+.stack > * + * { margin-top: 14px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.spacer { flex: 1; }
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 10px 16px; border-radius: 12px;
+  font-weight: 800; min-height: 44px; }
+.btn:hover { border-color: var(--tile-edge); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.danger { color: var(--bad); }
+.btn.big { padding: 14px 22px; font-size: 1.1rem; min-height: 54px; }
+.btn:disabled { opacity: .45; cursor: default; }
+.link { background: none; border: none; color: var(--accent); font-weight: 700; padding: 6px 2px; }
+label.field { display: block; font-weight: 700; font-size: .9rem; }
+label.field > span { display: block; margin-bottom: 4px; color: var(--muted); }
+input[type=text], input[type=password], input[type=number], input[type=email], select, textarea {
+  width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface-2); min-height: 44px;
+}
+textarea { min-height: 120px; resize: vertical; }
+input:focus, select:focus, textarea:focus, button:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 1px; border-color: var(--accent); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.pill { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: .8rem; font-weight: 800;
+  background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); }
+.pill.open { background: var(--good-soft); color: var(--good); border-color: transparent; }
+.pill.ready { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.notice { padding: 12px 14px; border-radius: 12px; background: var(--warn-soft); color: var(--ink); }
+.error { color: var(--bad); font-weight: 700; }
+#toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(120px);
+  background: var(--ink); color: var(--bg); padding: 12px 18px; border-radius: 12px; font-weight: 700;
+  transition: transform .25s ease; z-index: 50; max-width: calc(100% - 32px); }
+#toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ---------- Student: class + PIN ---------- */
+.class-list { display: grid; gap: 10px; }
+.class-btn { text-align: left; padding: 16px 18px; border-radius: 14px; border: 1px solid var(--line);
+  background: var(--surface); font-weight: 800; font-size: 1.1rem; box-shadow: var(--shadow); min-height: 60px; }
+.class-btn:hover { border-color: var(--accent); }
+.pin-dots { display: flex; gap: 14px; justify-content: center; margin: 18px 0 22px; }
+.pin-dots i { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--tile-edge); }
+.pin-dots i.on { background: var(--accent); border-color: var(--accent); }
+.pin-dots.shake { animation: shake .35s; }
+@keyframes shake { 25% { transform: translateX(-8px) } 75% { transform: translateX(8px) } }
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 320px; margin: 0 auto; }
+.keypad button { min-height: 64px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface);
+  font-size: 1.5rem; font-weight: 800; box-shadow: var(--shadow); }
+.keypad button:active { transform: translateY(1px); }
+.keypad .blank { visibility: hidden; }
+.center { text-align: center; }
+.waiting-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); display: inline-block;
+  animation: pulse 1.4s infinite ease-in-out; margin: 0 4px; }
+.waiting-dot:nth-child(2) { animation-delay: .2s } .waiting-dot:nth-child(3) { animation-delay: .4s }
+@keyframes pulse { 0%, 80%, 100% { opacity: .2; transform: scale(.8) } 40% { opacity: 1; transform: scale(1) } }
+
+/* ---------- Student: play ---------- */
+.hud { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; font-weight: 800; }
+.hud .chip { background: var(--surface); border: 1px solid var(--line); border-radius: 99px; padding: 6px 12px; font-size: .92rem; }
+.hud .who { color: var(--muted); font-weight: 700; margin-right: auto; }
+.lvl-dots { display: inline-flex; gap: 3px; margin-left: 6px; vertical-align: middle; }
+.lvl-dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+.lvl-dots i.on { background: var(--accent); }
+.timer.low { color: var(--bad); }
+.kicker { text-transform: uppercase; letter-spacing: .08em; font-size: .78rem; font-weight: 900; color: var(--muted); }
+.prompt { display: flex; gap: 12px; align-items: flex-start; margin: 10px 0 6px; }
+.speak { flex: none; width: 52px; height: 52px; border-radius: 14px; border: none; background: var(--accent);
+  color: var(--accent-ink); font-size: 1.4rem; display: grid; place-items: center; }
+.es { font-size: 1.45rem; font-weight: 800; line-height: 1.35; margin: 6px 0 0; }
+.es .w { border-radius: 6px; padding: 0 2px; }
+.es .w.g { border-bottom: 2px dotted var(--accent); cursor: pointer; }
+.es .w.g:hover, .es .w.active { background: var(--accent-soft); }
+.gloss { background: var(--surface-2); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+  border-radius: 10px; padding: 10px 12px; margin: 10px 0 4px; display: flex; gap: 10px; align-items: center; }
+.gloss b { font-size: 1.05rem; }
+.gloss .x { margin-left: auto; }
+.note { font-size: .9rem; color: var(--muted); margin-top: 8px; }
+.answer-line { min-height: 64px; border-bottom: 2px solid var(--line); margin: 18px 0 16px; padding: 6px 0;
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.answer-line .ph { color: var(--muted); font-weight: 600; }
+.bank { display: flex; flex-wrap: wrap; gap: 9px; justify-content: center; min-height: 56px; }
+.tile { border: 1.5px solid var(--tile-edge); border-bottom-width: 4px; background: var(--tile); color: var(--tile-ink);
+  border-radius: 12px; padding: 8px 14px; font-size: 1.15rem; font-weight: 800; min-height: 48px; min-width: 44px;
+  transition: transform .08s; user-select: none; }
+.tile:active { transform: translateY(2px); border-bottom-width: 2px; }
+.tile.ghost { background: var(--line); border-color: var(--line); color: transparent; pointer-events: none; }
+.actions { display: flex; gap: 10px; margin-top: 20px; }
+.actions .btn.primary { flex: 1; }
+.feedback { border-radius: var(--radius); padding: 16px 18px; margin-top: 16px; font-weight: 700; }
+.feedback.good { background: var(--good-soft); }
+.feedback.bad { background: var(--bad-soft); }
+.feedback .head { font-size: 1.3rem; font-weight: 900; }
+.feedback.good .head { color: var(--good); }
+.feedback.bad .head { color: var(--bad); }
+.feedback .btn { margin-top: 12px; width: 100%; }
+.answer-line.good .tile { border-color: var(--good); }
+.answer-line.bad .tile { border-color: var(--bad); }
+.stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 18px 0; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; text-align: center; }
+.stat b { display: block; font-size: 1.8rem; font-weight: 900; color: var(--accent); }
+.stat span { font-size: .85rem; color: var(--muted); font-weight: 700; }
+.big-emoji { font-size: 3.5rem; line-height: 1; margin-top: 20px; }
+
+/* ---------- Teacher ---------- */
+.topbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 12px 16px;
+  border-bottom: 1px solid var(--line); background: var(--surface); position: sticky; top: 0; z-index: 10; }
+.topbar nav { display: flex; gap: 2px; flex-wrap: wrap; }
+.topbar nav a { text-decoration: none; color: var(--muted); font-weight: 800; padding: 8px 12px; border-radius: 10px; }
+.topbar nav a.on { color: var(--accent); background: var(--accent-soft); }
+.list { display: grid; gap: 10px; }
+.item { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 14px 16px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 14px; }
+.item .t { font-weight: 800; }
+.item a.t { text-decoration: none; color: var(--ink); }
+.section-title { margin: 26px 0 10px; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 900; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); background: var(--surface-2); white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+tr.dim td { color: var(--muted); }
+tr.clickable { cursor: pointer; }
+tr.clickable:hover td { background: var(--surface-2); }
+td.num, th.num { text-align: right; white-space: nowrap; }
+.detail td { background: var(--surface-2); }
+.detail ol { margin: 0; padding-left: 20px; }
+.detail li { margin: 4px 0; }
+.ok { color: var(--good); font-weight: 900; } .no { color: var(--bad); font-weight: 900; }
+.join-banner { background: var(--accent); color: var(--accent-ink); border-radius: var(--radius); padding: 16px 18px; font-weight: 800; }
+.join-banner code { background: rgba(255,255,255,.18); padding: 2px 6px; border-radius: 6px; word-break: break-all; }
+.tiles4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+.status { font-weight: 800; white-space: nowrap; }
+.status.working { color: var(--good); } .status.idle { color: var(--warn); } .status.done { color: var(--accent); }
+.pin-cards { display: none; }
+@media print {
+  body { background: #fff; color: #000; }
+  .topbar, .wrap > *:not(.pin-cards), #toast { display: none !important; }
+  .pin-cards { display: grid !important; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .pin-card { border: 1.5px dashed #888; border-radius: 10px; padding: 14px; break-inside: avoid; font-family: Nunito, sans-serif; }
+  .pin-card .n { font-weight: 900; font-size: 1.1rem; } .pin-card .p { font-size: 1.8rem; font-weight: 900; letter-spacing: .2em; }
+}
+@media (max-width: 520px) {
+  h1 { font-size: 1.45rem; }
+  .es { font-size: 1.25rem; }
+  .tile { font-size: 1.05rem; padding: 7px 11px; }
+  .hide-sm { display: none; }
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="logic.js"></script>
+<script>
+'use strict';
+const C = window.WARMUP_CONFIG || {};
+const CONFIGURED = /^https?:\/\//.test(C.url || '') && C.key && !/^PASTE/.test(C.key);
+const sb = CONFIGURED ? window.supabase.createClient(C.url, C.key) : null;
+const app = document.getElementById('app');
+
+// ---------- small helpers ----------
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem('wu_' + k)); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem('wu_' + k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem('wu_' + k); } catch (e) {} }
+};
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+let timers = [];
+function clearTimers() { timers.forEach(t => clearInterval(t)); timers = []; }
+function every(ms, fn) { timers.push(setInterval(fn, ms)); }
+let acts = {};
+let keyHandler = null;
+function render(html, handlers, onKey) {
+  app.innerHTML = html; acts = handlers || {}; keyHandler = onKey || null;
+}
+app.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (el && acts[el.dataset.act]) { e.preventDefault(); acts[el.dataset.act](el, e); }
+});
+app.addEventListener('submit', e => {
+  const f = e.target.closest('form[data-act]');
+  if (f && acts[f.dataset.act]) { e.preventDefault(); acts[f.dataset.act](f, e); }
+});
+document.addEventListener('keydown', e => { if (keyHandler) keyHandler(e); });
+
+async function rpc(name, args) {
+  const { data, error } = await sb.rpc(name, args);
+  if (error) throw error;
+  return data;
+}
+async function q(promise) {
+  const { data, error } = await promise;
+  if (error) throw error;
+  return data;
+}
+function fail(e) { console.error(e); toast(e && e.message ? e.message : 'Something went wrong'); }
+function fmtTime(ms) {
+  const s = Math.max(0, Math.ceil(ms / 1000));
+  return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+}
+function fmtDate(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+function ago(iso) {
+  const s = Math.round((Date.now() - new Date(iso).getTime()) / 1000);
+  if (s < 60) return Math.max(0, s) + 's ago';
+  if (s < 3600) return Math.round(s / 60) + 'm ago';
+  return fmtDate(iso);
+}
+const studentUrl = () => location.origin + location.pathname;
+
+// ---------- speech ----------
+function speak(text, rate) {
+  if (!('speechSynthesis' in window)) { toast('This browser can’t read aloud'); return; }
+  const u = new SpeechSynthesisUtterance(text);
+  const lang = (C.speechLang || 'es-MX').toLowerCase();
+  const voices = speechSynthesis.getVoices();
+  const v = voices.find(v => v.lang.replace('_', '-').toLowerCase() === lang)
+         || voices.find(v => v.lang.toLowerCase().startsWith('es'));
+  if (v) u.voice = v;
+  u.lang = v ? v.lang : (C.speechLang || 'es-MX');
+  u.rate = rate || 0.9;
+  speechSynthesis.cancel(); speechSynthesis.speak(u);
+}
+if ('speechSynthesis' in window) speechSynthesis.getVoices();
+
+// ---------- router ----------
+function route() {
+  clearTimers();
+  if (!CONFIGURED) return renderSetup();
+  const h = location.hash || '#/';
+  if (h.startsWith('#/teacher')) Teacher.route(h); else Student.start();
+}
+window.addEventListener('hashchange', route);
+
+function renderSetup() {
+  render(`<div class="wrap stack">
+    <div class="brand"><span class="dot">W</span> Warm-Ups</div>
+    <h1>Almost ready</h1>
+    <div class="card stack">
+      <p>This copy of Warm-Ups isn’t connected to a database yet.</p>
+      <p>Open <b>config.js</b> and paste in the Supabase project URL and anon key. The README has the steps.</p>
+    </div></div>`);
+}
+
+// =====================================================================
+// STUDENT
+// =====================================================================
+const Student = {
+  P: null,
+
+  async start() {
+    const saved = store.get('token');
+    if (saved) {
+      try {
+        const st = await rpc('play_state', { p_token: saved });
+        if (!st.error && st.session.status === 'open') return this.begin(saved, st);
+        if (!st.error && st.participant.finished_at) return this.begin(saved, st);
+      } catch (e) { console.warn(e); }
+      store.del('token');
+    }
+    const cls = store.get('class');
+    if (cls) return this.pin(cls);
+    this.classes();
+  },
+
+  async classes() {
+    render(`<div class="wrap"><div class="brand"><span class="dot">W</span> Warm-Ups</div>
+      <h1>Pick your class</h1><p class="muted">Loading…</p></div>`);
+    let list = [];
+    try { list = await rpc('list_classes'); } catch (e) { return fail(e); }
+    render(`<div class="wrap">
+      <div class="brand"><span class="dot">W</span> Warm-Ups</div>
+      <h1>Pick your class</h1>
+      <div class="class-list">
+        ${list.map(c => `<button class="class-btn" data-act="pick" data-id="${esc(c.id)}" data-name="${esc(c.name)}">${esc(c.name)}</button>`).join('')
+          || '<p class="muted">No classes yet. Your teacher needs to set one up.</p>'}
+      </div>
+      <p class="center small" style="margin-top:36px"><a href="#/teacher">Teacher sign-in</a></p>
+    </div>`, {
+      pick: el => { const cls = { id: el.dataset.id, name: el.dataset.name }; store.set('class', cls); this.pin(cls); }
+    });
+  },
+
+  pin(cls, errMsg) {
+    let digits = '';
+    const draw = (shake) => {
+      const dots = document.querySelector('.pin-dots');
+      dots.innerHTML = [0, 1, 2, 3].map(i => `<i class="${i < digits.length ? 'on' : ''}"></i>`).join('');
+      if (shake) { dots.classList.remove('shake'); void dots.offsetWidth; dots.classList.add('shake'); }
+    };
+    const press = async d => {
+      if (digits.length >= 4) return;
+      digits += d; draw();
+      if (digits.length === 4) {
+        const pinTry = digits;
+        document.getElementById('pin-msg').textContent = 'Checking…';
+        const ok = await this.join(cls, pinTry);
+        if (!ok) { digits = ''; draw(true); }
+      }
+    };
+    render(`<div class="wrap center">
+      <div class="brand" style="justify-content:center"><span class="dot">W</span> Warm-Ups</div>
+      <h1 style="margin-top:18px">${esc(cls.name)}</h1>
+      <p class="muted">Type your 4-digit PIN</p>
+      <div class="pin-dots"></div>
+      <p id="pin-msg" class="${errMsg ? 'error' : 'muted'} small" style="min-height:1.4em">${esc(errMsg || '')}</p>
+      <div class="keypad">
+        ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button data-act="d" data-d="${n}">${n}</button>`).join('')}
+        <button class="blank" tabindex="-1"></button>
+        <button data-act="d" data-d="0">0</button>
+        <button data-act="back" aria-label="Delete">⌫</button>
+      </div>
+      <p style="margin-top:28px"><button class="link" data-act="other">Not your class?</button></p>
+    </div>`, {
+      d: el => press(el.dataset.d),
+      back: () => { digits = digits.slice(0, -1); draw(); },
+      other: () => { store.del('class'); this.classes(); }
+    }, e => {
+      if (/^[0-9]$/.test(e.key)) press(e.key);
+      else if (e.key === 'Backspace') { digits = digits.slice(0, -1); draw(); }
+    });
+    draw();
+  },
+
+  async join(cls, pin) {
+    let r;
+    try { r = await rpc('join_session', { p_class: cls.id, p_pin: pin }); }
+    catch (e) { fail(e); const m = document.getElementById('pin-msg'); if (m) m.textContent = ''; return false; }
+    if (r.error === 'bad_pin') {
+      const m = document.getElementById('pin-msg');
+      if (m) { m.textContent = 'That PIN isn’t on this class list. Try again.'; m.className = 'error small'; }
+      return false;
+    }
+    if (r.error === 'not_open') { this.waiting(cls, pin, r.student_name); return true; }
+    store.set('token', r.token);
+    const st = await rpc('play_state', { p_token: r.token });
+    this.begin(r.token, st);
+    return true;
+  },
+
+  waiting(cls, pin, name) {
+    clearTimers();
+    render(`<div class="wrap center">
+      <div class="big-emoji">👋</div>
+      <h1>Hola, ${esc(name)}</h1>
+      <p class="muted">Your teacher hasn’t opened today’s warm-up yet.<br>This page will start on its own.</p>
+      <p style="margin:26px 0"><span class="waiting-dot"></span><span class="waiting-dot"></span><span class="waiting-dot"></span></p>
+      <button class="link" data-act="notme">Not ${esc(name)}?</button>
+    </div>`, { notme: () => { clearTimers(); this.pin(cls); } });
+    let busy = false;
+    every(3000, async () => {
+      if (busy) return; busy = true;
+      try {
+        const r = await rpc('join_session', { p_class: cls.id, p_pin: pin });
+        if (r.token) {
+          clearTimers(); store.set('token', r.token);
+          const st = await rpc('play_state', { p_token: r.token });
+          this.begin(r.token, st);
+        }
+      } catch (e) { console.warn(e); }
+      busy = false;
+    });
+  },
+
+  begin(token, st) {
+    clearTimers();
+    const P = this.P = {
+      token, name: st.student_name, session: st.session,
+      level: st.participant.current_level, c: 0, w: 0,
+      questions: st.questions, attempts: st.attempts.slice(),
+      lastId: null, cur: null, finished: st.participant.finish_reason || (st.participant.finished_at ? 'done' : null),
+      skew: new Date(st.now).getTime() - Date.now(),
+      endAt: st.session.time_limit_min ? new Date(st.participant.joined_at).getTime() + st.session.time_limit_min * 60000 : null
+    };
+    if (P.finished) return this.done();
+    if (!P.questions.length) {
+      return render(`<div class="wrap center"><h1>No questions yet</h1><p class="muted">This warm-up’s unit is empty. Let your teacher know.</p></div>`);
+    }
+    this.next();
+    every(1000, () => this.tick());
+    every(4000, () => this.poll());
+  },
+
+  now() { return Date.now() + this.P.skew; },
+  correctCount() { return this.P.attempts.filter(a => a.correct).length; },
+
+  next() {
+    const P = this.P;
+    if (P.finished) return this.done();
+    const qn = WU.pickQuestion(P.questions, P.level, P.attempts, P.lastId);
+    P.lastId = qn.id;
+    P.cur = { q: qn, tiles: WU.buildTiles(qn), built: [], hints: new Set(), t0: Date.now(), checked: false, result: null, gloss: null };
+    this.draw();
+  },
+
+  glossFor(q, word) {
+    const g = q.glossary || {};
+    const k = WU.glossKey(word);
+    if (!k) return [];
+    const hits = [];
+    if (g[k]) hits.push([k, g[k]]);
+    Object.keys(g).forEach(key => {
+      if (key !== k && key.split(/\s+/).includes(k)) hits.push([key, g[key]]);
+    });
+    return hits;
+  },
+
+  draw() {
+    const P = this.P, cur = P.cur, qn = cur.q;
+    const tileById = id => cur.tiles.find(t => t.id === id);
+    const target = P.session.target_correct;
+    const words = qn.prompt.split(/\s+/).filter(Boolean);
+    const esHtml = words.map((w, i) => {
+      const has = this.glossFor(qn, w).length > 0;
+      return `<span class="w${has ? ' g' : ''}${cur.gloss && cur.gloss.i === i ? ' active' : ''}" ${has ? `data-act="gloss" data-i="${i}"` : ''}>${esc(w)}</span>`;
+    }).join(' ');
+    let glossHtml = '';
+    if (cur.gloss) {
+      const hits = this.glossFor(qn, words[cur.gloss.i]);
+      glossHtml = `<div class="gloss"><div>${hits.map(([k, v]) => `<div><b>${esc(k)}</b> — ${esc(v)}</div>`).join('')}</div>
+        <button class="btn x" data-act="sayword" aria-label="Say it">🔊</button></div>`;
+    }
+    const builtHtml = cur.built.length
+      ? cur.built.map(id => `<button class="tile" data-act="unplace" data-id="${id}" ${cur.checked ? 'disabled' : ''}>${esc(tileById(id).w)}</button>`).join('')
+      : '<span class="ph">Tap the words in order</span>';
+    const bankHtml = cur.tiles.map(t => cur.built.includes(t.id)
+      ? `<span class="tile ghost">${esc(t.w)}</span>`
+      : `<button class="tile" data-act="place" data-id="${t.id}" ${cur.checked ? 'disabled' : ''}>${esc(t.w)}</button>`).join('');
+
+    let bottom;
+    if (!cur.checked) {
+      bottom = `<div class="actions">
+        <button class="btn big" data-act="clear" ${cur.built.length ? '' : 'disabled'}>Clear</button>
+        <button class="btn big primary" data-act="check" ${cur.built.length ? '' : 'disabled'}>Check</button></div>`;
+    } else {
+      const r = cur.result;
+      const lvlNote = r.change > 0 ? `<div>⬆ Level up! Now on level ${P.level}.</div>`
+                    : r.change < 0 ? `<div class="muted">Moving to level ${P.level} for some practice.</div>` : '';
+      const done = !!P.finished;
+      bottom = `<div class="feedback ${r.correct ? 'good' : 'bad'}">
+        <div class="head">${r.correct ? '¡Correcto!' : 'Not quite'}</div>
+        ${r.correct ? '' : `<div>Answer: <b>${esc(qn.answer)}</b></div>`}
+        ${qn.notes ? `<div class="note">💡 ${esc(qn.notes)}</div>` : ''}
+        ${lvlNote}
+        <button class="btn big primary" data-act="next" id="nextBtn">${done ? 'See my results' : 'Next →'}</button>
+      </div>`;
+    }
+
+    render(`<div class="wrap">
+      <div class="hud">
+        <span class="who">${esc(P.name)}</span>
+        <span class="chip">Level ${P.level}<span class="lvl-dots">${[1, 2, 3, 4, 5].map(n => `<i class="${n <= P.level ? 'on' : ''}"></i>`).join('')}</span></span>
+        <span class="chip">✓ ${this.correctCount()}${target ? ' / ' + target : ''}</span>
+        ${P.endAt ? `<span class="chip timer" id="timer">${fmtTime(P.endAt - this.now())}</span>` : ''}
+      </div>
+      <div class="card">
+        <div class="kicker">Build it in English</div>
+        <div class="prompt">
+          <button class="speak" data-act="say" aria-label="Hear the sentence">🔊</button>
+          <p class="es" lang="es">${esHtml}</p>
+        </div>
+        ${glossHtml}
+        <div class="answer-line ${cur.checked ? (cur.result.correct ? 'good' : 'bad') : ''}">${builtHtml}</div>
+        <div class="bank">${bankHtml}</div>
+        ${bottom}
+      </div>
+    </div>`, {
+      say: () => speak(qn.prompt),
+      sayword: () => speak(words[cur.gloss.i].replace(/[.,!?;:¿¡"]/g, ''), 0.8),
+      gloss: el => {
+        const i = +el.dataset.i;
+        cur.gloss = cur.gloss && cur.gloss.i === i ? null : { i };
+        if (cur.gloss) cur.hints.add(WU.glossKey(words[i]));
+        this.draw();
+      },
+      place: el => { if (!cur.checked) { cur.built.push(el.dataset.id); this.draw(); } },
+      unplace: el => { if (!cur.checked) { cur.built = cur.built.filter(id => id !== el.dataset.id); this.draw(); } },
+      clear: () => { cur.built = []; this.draw(); },
+      check: () => this.check(),
+      next: () => this.next()
+    }, e => {
+      if (e.key === 'Enter') { if (cur.checked) this.next(); else if (cur.built.length) this.check(); }
+      else if (e.key === 'Backspace' && !cur.checked && cur.built.length) { cur.built.pop(); this.draw(); }
+    });
+    if (cur.checked) { const b = document.getElementById('nextBtn'); if (b) b.focus({ preventScroll: true }); }
+  },
+
+  async check() {
+    const P = this.P, cur = P.cur, qn = cur.q;
+    if (cur.checked || !cur.built.length) return;
+    const words = cur.built.map(id => cur.tiles.find(t => t.id === id).w);
+    const correct = WU.isCorrect(words, qn);
+    const nl = WU.nextLevel({ level: P.level, c: P.c, w: P.w }, correct);
+    cur.checked = true;
+    cur.result = { correct, change: nl.change };
+    P.attempts.push({ question_id: qn.id, correct, level: qn.level });
+    P.level = nl.level; P.c = nl.c; P.w = nl.w;
+    const target = P.session.target_correct;
+    if (target && this.correctCount() >= target) P.finished = 'target';
+    this.draw();
+    const args = {
+      p_token: P.token, p_question: qn.id, p_level: qn.level, p_correct: correct,
+      p_response: words.join(' '), p_new_level: P.level, p_hints: cur.hints.size, p_ms: Date.now() - cur.t0
+    };
+    for (let i = 0; i < 4; i++) {
+      try {
+        const r = await rpc('submit_attempt', args);
+        if (r.status === 'closed' && !P.finished) { P.finished = 'closed'; }
+        else if (r.finished && !P.finished) P.finished = r.finish_reason || 'done';
+        if (P.finished && P.cur === cur) this.draw();
+        return;
+      } catch (e) {
+        console.warn(e);
+        if (i === 0) toast('Connection hiccup — retrying…');
+        await new Promise(res => setTimeout(res, 1500 * (i + 1)));
+      }
+    }
+    toast('Couldn’t save that answer. Check your Wi-Fi.');
+  },
+
+  tick() {
+    const P = this.P;
+    if (!P || !P.endAt || P.finished) return;
+    const left = P.endAt - this.now();
+    const el = document.getElementById('timer');
+    if (el) { el.textContent = fmtTime(left); el.classList.toggle('low', left < 30000); }
+    if (left <= 0) {
+      P.finished = 'time';
+      rpc('session_status', { p_token: P.token }).catch(() => {});
+      if (!P.cur || !P.cur.checked) this.done(); else this.draw();
+    }
+  },
+
+  async poll() {
+    const P = this.P;
+    if (!P || P.finished) return;
+    try {
+      const r = await rpc('session_status', { p_token: P.token });
+      if (r.error) return;
+      if (r.status === 'closed') { P.finished = 'closed'; this.done(); }
+      else if (r.finished) { P.finished = r.finish_reason || 'done'; if (!P.cur || !P.cur.checked) this.done(); else this.draw(); }
+    } catch (e) { console.warn(e); }
+  },
+
+  done() {
+    clearTimers();
+    const P = this.P;
+    const s = WU.summarize(P.attempts, P.session.target_correct);
+    const head = {
+      target: ['🎉', 'You hit the goal!'],
+      time: ['⏱️', 'Time’s up!'],
+      closed: ['✅', 'Warm-up closed'],
+      done: ['✅', 'All done']
+    }[P.finished] || ['✅', 'All done'];
+    render(`<div class="wrap center">
+      <div class="big-emoji">${head[0]}</div>
+      <h1>${head[1]}</h1>
+      <p class="muted">Nice work, ${esc(P.name.replace(/\.$/, ''))}.</p>
+      <div class="stats">
+        <div class="stat"><b>${s.correct}</b><span>Correct</span></div>
+        <div class="stat"><b>${s.total}</b><span>Answered</span></div>
+        <div class="stat"><b>${s.accuracy === null ? '—' : s.accuracy + '%'}</b><span>Accuracy</span></div>
+        <div class="stat"><b>${s.topLevel || '—'}</b><span>Top level</span></div>
+      </div>
+      <button class="btn big" data-act="exit">Done</button>
+    </div>`, { exit: () => { store.del('token'); this.P = null; Student.start(); } });
+  }
+};
+
+// =====================================================================
+// TEACHER
+// =====================================================================
+const Teacher = {
+  user: null,
+  openRows: new Set(),
+
+  async route(h) {
+    const { data } = await sb.auth.getSession();
+    this.user = data.session ? data.session.user : null;
+    if (!this.user) return this.login();
+    const [, , page, id] = h.split('/');
+    try {
+      if (page === 'classes') return await this.classes();
+      if (page === 'class' && id) return await this.classPage(id);
+      if (page === 'units') return await this.units();
+      if (page === 'unit' && id) return await this.unitPage(id);
+      if (page === 'session' && id) return await this.sessionPage(id);
+      return await this.home();
+    } catch (e) { fail(e); }
+  },
+
+  shell(active, body, handlers, wide) {
+    const nav = [['', 'Warm-ups'], ['classes', 'Classes'], ['units', 'Units']];
+    render(`<div class="topbar">
+        <div class="brand"><span class="dot">W</span><span class="hide-sm">Warm-Ups</span></div>
+        <nav>${nav.map(([k, l]) => `<a href="#/teacher${k ? '/' + k : ''}" class="${active === k ? 'on' : ''}">${l}</a>`).join('')}</nav>
+        <span class="spacer"></span>
+        <button class="link" data-act="signout">Sign out</button>
+      </div>
+      <div class="wrap ${wide ? 'wide' : ''}">${body}</div>`,
+      Object.assign({ signout: async () => { await sb.auth.signOut(); location.hash = '#/teacher'; route(); } }, handlers));
+  },
+
+  login() {
+    render(`<div class="wrap" style="max-width:420px">
+      <div class="brand"><span class="dot">W</span> Warm-Ups</div>
+      <h1>Teacher sign-in</h1>
+      <form class="card stack" data-act="login">
+        <label class="field"><span>Username or email</span><input type="text" name="u" autocomplete="username" autocapitalize="off" required></label>
+        <label class="field"><span>Password</span><input type="password" name="p" autocomplete="current-password" required></label>
+        <p id="login-err" class="error small"></p>
+        <button class="btn primary big" type="submit">Sign in</button>
+      </form>
+      <p class="center small"><a href="#/">← Student page</a></p>
+    </div>`, {
+      login: async f => {
+        let u = f.u.value.trim();
+        if (!u.includes('@')) u = u.toLowerCase() + '@' + (C.usernameDomain || 'warmup.local');
+        const { error } = await sb.auth.signInWithPassword({ email: u, password: f.p.value });
+        if (error) { document.getElementById('login-err').textContent = 'That username and password didn’t match.'; return; }
+        route();
+      }
+    });
+  },
+
+  // ---------- Warm-ups (home) ----------
+  async home() {
+    const [classes, units, sessions] = await Promise.all([
+      q(sb.from('classes').select('id,name').order('name')),
+      q(sb.from('units').select('id,name').order('created_at', { ascending: false })),
+      q(sb.from('sessions').select('*, classes(name), units(name)').order('created_at', { ascending: false }).limit(60))
+    ]);
+    const group = st => sessions.filter(s => s.status === st);
+    const item = s => `<div class="item">
+      <div style="flex:1;min-width:200px">
+        <a class="t" href="#/teacher/session/${s.id}">${esc(s.title || s.units?.name || 'Warm-up')}</a>
+        <div class="small muted">${esc(s.classes?.name || '')} · ${esc(s.units?.name || '')} · ${this.settingsText(s)}</div>
+        <div class="small muted">${s.status === 'closed' ? 'Closed ' + fmtDate(s.closed_at) : s.status === 'open' ? 'Opened ' + fmtDate(s.opened_at) : 'Made ' + fmtDate(s.created_at)}</div>
+      </div>
+      ${s.status === 'ready' ? `<button class="btn primary" data-act="open" data-id="${s.id}" data-class="${s.class_id}">Open now</button>
+          <button class="btn danger" data-act="del" data-id="${s.id}">Delete</button>` : ''}
+      ${s.status === 'open' ? `<a class="btn primary" href="#/teacher/session/${s.id}" style="text-decoration:none">Live view</a>` : ''}
+      ${s.status === 'closed' ? `<a class="btn" href="#/teacher/session/${s.id}" style="text-decoration:none">Results</a>` : ''}
+    </div>`;
+    const canMake = classes.length && units.length;
+    const today = new Date().toLocaleDateString([], { month: 'short', day: 'numeric' });
+    this.shell('', `
+      <h1>Warm-ups</h1>
+      ${canMake ? `<form class="card stack" data-act="create">
+        <h2>Prepare a warm-up</h2>
+        <div class="grid2">
+          <label class="field"><span>Class</span><select name="cls">${classes.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></label>
+          <label class="field"><span>Unit</span><select name="unit">${units.map(u => `<option value="${u.id}">${esc(u.name)}</option>`).join('')}</select></label>
+        </div>
+        <label class="field"><span>Name (optional)</span><input type="text" name="title" placeholder="e.g. Warm-up ${esc(today)}"></label>
+        <div class="grid2">
+          <label class="field"><span>Goal: correct answers</span><input type="number" name="target" min="1" max="100" value="8"></label>
+          <label class="field"><span>Time limit (minutes)</span><input type="number" name="mins" min="1" max="120" value="6"></label>
+          <label class="field"><span>Starting level</span><select name="start">${[1, 2, 3, 4, 5].map(n => `<option ${n === 2 ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
+        </div>
+        <p class="small muted">A student finishes when they reach the goal or run out of time, whichever comes first. Leave either one blank to turn it off. Closing the warm-up always ends it for everyone.</p>
+        <div class="row"><button class="btn primary" type="submit">Save for later</button>
+          <button class="btn" type="button" data-act="createOpen">Save and open now</button></div>
+      </form>` : `<div class="notice">First, add a <a href="#/teacher/classes">class</a> and a <a href="#/teacher/units">unit</a>.</div>`}
+      ${group('open').length ? `<div class="section-title">Open now</div><div class="list">${group('open').map(item).join('')}</div>` : ''}
+      ${group('ready').length ? `<div class="section-title">Ready to open</div><div class="list">${group('ready').map(item).join('')}</div>` : ''}
+      ${group('closed').length ? `<div class="section-title">Finished</div><div class="list">${group('closed').map(item).join('')}</div>` : ''}
+    `, {
+      createOpen: el => {
+        const f = el.closest('form');
+        if (f.reportValidity()) acts.create(f, null, true);
+      },
+      create: async (f, e, openNow) => {
+        const num = v => (v === '' ? null : Math.max(1, parseInt(v, 10)));
+        try {
+          const row = await q(sb.from('sessions').insert({
+            class_id: f.cls.value, unit_id: f.unit.value, title: f.title.value.trim() || null,
+            target_correct: num(f.target.value), time_limit_min: num(f.mins.value), start_level: +f.start.value
+          }).select().single());
+          if (openNow) { await this.openSession(row.id, row.class_id); location.hash = '#/teacher/session/' + row.id; }
+          else { toast('Saved'); this.home(); }
+        } catch (err) { fail(err); }
+      },
+      open: async el => {
+        try { await this.openSession(el.dataset.id, el.dataset.class); location.hash = '#/teacher/session/' + el.dataset.id; }
+        catch (err) { fail(err); }
+      },
+      del: async el => {
+        if (!confirm('Delete this warm-up?')) return;
+        try { await q(sb.from('sessions').delete().eq('id', el.dataset.id)); this.home(); } catch (err) { fail(err); }
+      }
+    });
+  },
+
+  settingsText(s) {
+    const parts = [];
+    if (s.target_correct) parts.push('goal ' + s.target_correct + ' correct');
+    if (s.time_limit_min) parts.push(s.time_limit_min + ' min');
+    parts.push('starts L' + s.start_level);
+    return parts.join(' · ');
+  },
+
+  async openSession(id, classId) {
+    const now = new Date().toISOString();
+    await q(sb.from('sessions').update({ status: 'closed', closed_at: now }).eq('class_id', classId).eq('status', 'open'));
+    await q(sb.from('sessions').update({ status: 'open', opened_at: now, closed_at: null }).eq('id', id));
+  },
+
+  // ---------- Live view / results ----------
+  async sessionPage(id) {
+    const s = await q(sb.from('sessions').select('*, classes(name), units(name)').eq('id', id).single());
+    const [roster, questions] = await Promise.all([
+      q(sb.from('students').select('id,name').eq('class_id', s.class_id).order('name')),
+      q(sb.from('questions').select('id,prompt,answer,level').eq('unit_id', s.unit_id))
+    ]);
+    const load = () => q(sb.from('participants')
+      .select('id,student_id,current_level,joined_at,last_seen,finished_at,finish_reason,attempts(question_id,correct,level,response,hints,created_at)')
+      .eq('session_id', id));
+    let parts = await load();
+    const draw = () => this.drawSession(s, roster, questions, parts);
+    draw();
+    if (s.status === 'open') {
+      let busy = false;
+      every(3000, async () => {
+        if (busy || !document.getElementById('live-table')) return;
+        busy = true;
+        try { parts = await load(); this.patchSession(s, roster, questions, parts); } catch (e) { console.warn(e); }
+        busy = false;
+      });
+    }
+  },
+
+  rows(s, roster, parts) {
+    const byStudent = new Map(parts.map(p => [p.student_id, p]));
+    return roster.map(st => {
+      const p = byStudent.get(st.id);
+      if (!p) return { st, p: null, sum: null, status: s.status === 'closed' ? ['Didn’t join', 'dim'] : ['Not joined', 'dim'] };
+      const att = (p.attempts || []).slice().sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      p.attempts = att;
+      const sum = WU.summarize(att, s.target_correct);
+      sum.hints = att.reduce((n, a) => n + (a.hints || 0), 0);
+      let status;
+      if (p.finish_reason === 'target') status = ['🎯 Hit goal', 'done'];
+      else if (p.finish_reason === 'time') status = ['⏱ Time up', 'done'];
+      else if (s.status === 'closed') status = ['Stopped', ''];
+      else status = (Date.now() - new Date(p.last_seen).getTime() < 15000) ? ['Working', 'working'] : ['Idle', 'idle'];
+      return { st, p, sum, status };
+    }).sort((a, b) => (!!b.p - !!a.p) || a.st.name.localeCompare(b.st.name));
+  },
+
+  tableHtml(s, roster, questions, parts) {
+    const qById = new Map(questions.map(x => [x.id, x]));
+    const rows = this.rows(s, roster, parts);
+    return rows.map(r => {
+      if (!r.p) return `<tr class="dim"><td>${esc(r.st.name)}</td><td class="status">${r.status[0]}</td><td colspan="6"></td></tr>`;
+      const open = this.openRows.has(r.st.id);
+      const last = r.p.attempts.length ? ago(r.p.attempts[r.p.attempts.length - 1].created_at) : '—';
+      const main = `<tr class="clickable" data-act="toggle" data-id="${r.st.id}">
+        <td><b>${esc(r.st.name)}</b> <span class="small muted">${open ? '▴' : '▾'}</span></td>
+        <td class="status ${r.status[1]}">${r.status[0]}</td>
+        <td class="num">L${r.p.current_level}</td>
+        <td class="num">${r.sum.correct} / ${r.sum.total}</td>
+        <td class="num">${r.sum.accuracy === null ? '—' : r.sum.accuracy + '%'}</td>
+        <td class="num">${r.sum.completion === null ? '—' : r.sum.completion + '%'}</td>
+        <td class="num">${r.sum.points}</td>
+        <td class="num small">${last}</td></tr>`;
+      const detail = open ? `<tr class="detail"><td colspan="8">${r.p.attempts.length ? `<ol>${r.p.attempts.map(a => {
+          const qq = qById.get(a.question_id);
+          return `<li><span class="${a.correct ? 'ok' : 'no'}">${a.correct ? '✓' : '✗'}</span> L${a.level} · ${esc(qq ? qq.prompt : '(deleted question)')}
+            ${a.correct ? '' : `<div class="small muted">Built: “${esc(a.response)}”${qq ? ` — answer: “${esc(qq.answer)}”` : ''}</div>`}
+            ${a.hints ? `<span class="small muted">(${a.hints} word ${a.hints === 1 ? 'tip' : 'tips'})</span>` : ''}</li>`;
+        }).join('')}</ol>` : '<span class="muted">No answers yet.</span>'}</td></tr>` : '';
+      return main + detail;
+    }).join('');
+  },
+
+  summaryHtml(s, roster, questions, parts) {
+    const rows = this.rows(s, roster, parts);
+    const joined = rows.filter(r => r.p);
+    const finished = joined.filter(r => r.p.finish_reason === 'target');
+    const all = joined.flatMap(r => r.p.attempts);
+    const acc = all.length ? Math.round(100 * all.filter(a => a.correct).length / all.length) + '%' : '—';
+    return `<div class="tiles4">
+      <div class="stat"><b>${joined.length}/${roster.length}</b><span>Joined</span></div>
+      <div class="stat"><b>${s.target_correct ? finished.length : '—'}</b><span>Hit the goal</span></div>
+      <div class="stat"><b>${acc}</b><span>Class accuracy</span></div>
+      <div class="stat"><b>${all.length}</b><span>Answers</span></div>
+    </div>`;
+  },
+
+  missedHtml(questions, parts) {
+    const tally = new Map();
+    parts.forEach(p => (p.attempts || []).forEach(a => {
+      const t = tally.get(a.question_id) || { tries: 0, miss: 0 };
+      t.tries++; if (!a.correct) t.miss++;
+      tally.set(a.question_id, t);
+    }));
+    const qById = new Map(questions.map(x => [x.id, x]));
+    const top = [...tally.entries()].filter(([id, t]) => t.miss && qById.has(id))
+      .sort((a, b) => b[1].miss - a[1].miss || b[1].tries - a[1].tries).slice(0, 5);
+    if (!top.length) return '';
+    return `<div class="section-title">Most missed</div><div class="table-wrap"><table>
+      <tr><th>Spanish</th><th>English</th><th class="num">Missed</th></tr>
+      ${top.map(([id, t]) => { const x = qById.get(id); return `<tr><td>${esc(x.prompt)} <span class="small muted">L${x.level}</span></td><td>${esc(x.answer)}</td><td class="num">${t.miss} of ${t.tries}</td></tr>`; }).join('')}
+    </table></div>`;
+  },
+
+  drawSession(s, roster, questions, parts) {
+    const pill = `<span class="pill ${s.status}">${s.status === 'open' ? 'Open' : s.status === 'ready' ? 'Not open yet' : 'Closed'}</span>`;
+    this.shell('', `
+      <p class="small"><a href="#/teacher">← Warm-ups</a></p>
+      <div class="row"><h1 style="margin:4px 0">${esc(s.title || s.units?.name || 'Warm-up')}</h1>${pill}</div>
+      <p class="muted">${esc(s.classes?.name || '')} · ${esc(s.units?.name || '')} · ${this.settingsText(s)}</p>
+      <div class="row" style="margin:14px 0">
+        ${s.status === 'ready' ? '<button class="btn primary big" data-act="open">Open warm-up</button>' : ''}
+        ${s.status === 'open' ? '<button class="btn primary big" data-act="close">Close warm-up</button>' : ''}
+        ${s.status === 'closed' ? '<button class="btn" data-act="open">Reopen</button>' : ''}
+      </div>
+      ${s.status === 'open' ? `<div class="join-banner">Students go to <code>${esc(studentUrl())}</code>, pick <b>${esc(s.classes?.name || 'their class')}</b>, and type their PIN.</div>` : ''}
+      <div id="live-summary" style="margin-top:16px">${this.summaryHtml(s, roster, questions, parts)}</div>
+      <div class="section-title">${s.status === 'open' ? 'Live · updates every few seconds' : 'Results'} · tap a student for details</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Student</th><th>Status</th><th class="num">Level</th><th class="num">Correct</th><th class="num">Accuracy</th><th class="num">Goal</th><th class="num" title="Sum of the levels of correct answers">Points</th><th class="num">Last answer</th></tr></thead>
+        <tbody id="live-table">${this.tableHtml(s, roster, questions, parts)}</tbody>
+      </table></div>
+      <div id="live-missed">${this.missedHtml(questions, parts)}</div>
+    `, {
+      open: async () => { try { await this.openSession(s.id, s.class_id); this.route(location.hash); } catch (e) { fail(e); } },
+      close: async () => {
+        if (!confirm('Close the warm-up? Students will stop right away.')) return;
+        try { await q(sb.from('sessions').update({ status: 'closed', closed_at: new Date().toISOString() }).eq('id', s.id)); clearTimers(); this.route(location.hash); }
+        catch (e) { fail(e); }
+      },
+      toggle: el => {
+        const id = el.dataset.id;
+        this.openRows.has(id) ? this.openRows.delete(id) : this.openRows.add(id);
+        document.getElementById('live-table').innerHTML = this.tableHtml(s, roster, questions, this._parts || parts);
+      }
+    }, true);
+    this._parts = parts;
+  },
+
+  patchSession(s, roster, questions, parts) {
+    this._parts = parts;
+    const t = document.getElementById('live-table'); if (t) t.innerHTML = this.tableHtml(s, roster, questions, parts);
+    const m = document.getElementById('live-summary'); if (m) m.innerHTML = this.summaryHtml(s, roster, questions, parts);
+    const x = document.getElementById('live-missed'); if (x) x.innerHTML = this.missedHtml(questions, parts);
+  },
+
+  // ---------- Classes ----------
+  async classes() {
+    const list = await q(sb.from('classes').select('id,name,students(count)').order('name'));
+    this.shell('classes', `
+      <h1>Classes</h1>
+      <form class="card row" data-act="add">
+        <input type="text" name="name" placeholder="e.g. Spanish 1 – Period 3" required style="flex:1;min-width:200px">
+        <button class="btn primary" type="submit">Add class</button>
+      </form>
+      <div class="list" style="margin-top:16px">
+        ${list.map(c => `<div class="item"><a class="t" href="#/teacher/class/${c.id}" style="flex:1">${esc(c.name)}</a>
+          <span class="muted small">${c.students?.[0]?.count ?? 0} students</span>
+          <a class="btn" href="#/teacher/class/${c.id}" style="text-decoration:none">Roster</a></div>`).join('')
+          || '<p class="muted">No classes yet.</p>'}
+      </div>`, {
+      add: async f => {
+        try { const c = await q(sb.from('classes').insert({ name: f.name.value.trim() }).select().single()); location.hash = '#/teacher/class/' + c.id; }
+        catch (e) { fail(e); }
+      }
+    });
+  },
+
+  async classPage(id) {
+    const [c, students] = await Promise.all([
+      q(sb.from('classes').select('id,name').eq('id', id).single()),
+      q(sb.from('students').select('id,name,pin').eq('class_id', id).order('name'))
+    ]);
+    this.shell('classes', `
+      <p class="small"><a href="#/teacher/classes">← Classes</a></p>
+      <h1>${esc(c.name)}</h1>
+      <form class="card stack" data-act="add">
+        <h2>Add students</h2>
+        <label class="field"><span>One name per line — each gets a 4-digit PIN</span>
+          <textarea name="names" placeholder="Ana R.\nBen T.\nCarla M."></textarea></label>
+        <div class="row"><button class="btn primary" type="submit">Add students</button></div>
+      </form>
+      <div class="row" style="margin:22px 0 10px">
+        <h2 style="margin:0">Roster (${students.length})</h2><span class="spacer"></span>
+        ${students.length ? '<button class="btn" data-act="print">Print PIN cards</button>' : ''}
+      </div>
+      ${students.length ? `<div class="table-wrap"><table>
+        <tr><th>Name</th><th>PIN</th><th></th></tr>
+        ${students.map(s => `<tr><td>${esc(s.name)}</td><td><b style="letter-spacing:.12em">${esc(s.pin)}</b></td>
+          <td class="num"><button class="link" data-act="newpin" data-id="${s.id}">New PIN</button>
+          <button class="link danger" style="color:var(--bad)" data-act="remove" data-id="${s.id}" data-name="${esc(s.name)}">Remove</button></td></tr>`).join('')}
+      </table></div>` : '<p class="muted">No students yet.</p>'}
+      <p style="margin-top:30px"><button class="btn danger" data-act="delclass">Delete this class</button></p>
+      <div class="pin-cards">${students.map(s => `<div class="pin-card"><div class="n">${esc(s.name)}</div>
+        <div class="small">${esc(c.name)}</div><div class="p">${esc(s.pin)}</div><div class="small">${esc(studentUrl())}</div></div>`).join('')}</div>
+    `, {
+      add: async f => {
+        const names = f.names.value.split('\n').map(x => x.trim()).filter(Boolean);
+        if (!names.length) return;
+        const used = new Set(students.map(s => s.pin));
+        const rows = names.map(name => {
+          let pin; do { pin = String(Math.floor(Math.random() * 10000)).padStart(4, '0'); } while (used.has(pin) || /^(\d)\1{3}$/.test(pin));
+          used.add(pin); return { class_id: id, name, pin };
+        });
+        try { await q(sb.from('students').insert(rows)); toast(`Added ${rows.length}`); this.classPage(id); } catch (e) { fail(e); }
+      },
+      newpin: async el => {
+        const used = new Set(students.map(s => s.pin));
+        let pin; do { pin = String(Math.floor(Math.random() * 10000)).padStart(4, '0'); } while (used.has(pin));
+        try { await q(sb.from('students').update({ pin }).eq('id', el.dataset.id)); this.classPage(id); } catch (e) { fail(e); }
+      },
+      remove: async el => {
+        if (!confirm(`Remove ${el.dataset.name}? Their past results go too.`)) return;
+        try { await q(sb.from('students').delete().eq('id', el.dataset.id)); this.classPage(id); } catch (e) { fail(e); }
+      },
+      print: () => window.print(),
+      delclass: async () => {
+        if (!confirm(`Delete ${c.name}, its roster, and all its warm-up results?`)) return;
+        try { await q(sb.from('classes').delete().eq('id', id)); location.hash = '#/teacher/classes'; } catch (e) { fail(e); }
+      }
+    });
+  },
+
+  // ---------- Units ----------
+  importerHtml(withName) {
+    return `<div class="stack">
+      ${withName ? '<label class="field"><span>Unit name</span><input type="text" name="uname" placeholder="e.g. Unidad 2 – La familia"></label>' : ''}
+      <label class="field"><span>Paste from Google Sheets (select all cells in the tab, copy, paste here)</span>
+        <textarea name="paste" placeholder="level\tspanish\tenglish\talso_accept\tdecoys\tglossary\tnotes"></textarea></label>
+      <label class="field"><span>…or upload the tab as a CSV (File → Download → CSV)</span><input type="file" name="file" accept=".csv,.tsv,.txt,text/csv"></label>
+      <div id="preview" class="small"></div>
+    </div>`;
+  },
+
+  async readImport(f) {
+    let text = f.paste.value;
+    if (!text.trim() && f.file.files[0]) text = await f.file.files[0].text();
+    if (!text.trim()) return { questions: [], errors: ['Paste the sheet or choose a file first.'] };
+    return WU.rowsToQuestions(WU.parseTable(text));
+  },
+
+  levelCounts(qs) {
+    const n = [0, 0, 0, 0, 0];
+    qs.forEach(x => n[x.level - 1]++);
+    return n;
+  },
+
+  previewHtml(res) {
+    if (res.errors.length) return `<div class="error">${res.errors.map(esc).join('<br>')}</div>`;
+    const n = this.levelCounts(res.questions);
+    const thin = n.some(x => x < 3);
+    return `<div>Found <b>${res.questions.length}</b> questions — ${n.map((x, i) => `L${i + 1}: ${x}`).join(' · ')}</div>
+      ${thin ? '<div class="muted" style="margin-top:4px">Tip: the difficulty steps work best with at least 3 questions at each level.</div>' : ''}`;
+  },
+
+  async units() {
+    const list = await q(sb.from('units').select('id,name,created_at,questions(count)').order('created_at', { ascending: false }));
+    this.shell('units', `
+      <h1>Units</h1>
+      <form class="card stack" data-act="import">
+        <h2>Add a unit from a Google Sheet</h2>
+        <p class="small muted">One tab per unit. Columns: <b>level</b> (1–5), <b>spanish</b>, <b>english</b>, and optional
+          <b>also_accept</b>, <b>decoys</b>, <b>glossary</b>, <b>notes</b>. Separate multiple items with <b>|</b>.
+          <a href="sample-unit.csv" download>Download the template</a> and import it into Google Sheets to start.</p>
+        ${this.importerHtml(true)}
+        <div class="row"><button class="btn" type="button" data-act="check">Check sheet</button>
+          <button class="btn primary" type="submit">Add unit</button>
+          <span class="spacer"></span><button class="link" type="button" data-act="sample">Add the sample unit</button></div>
+      </form>
+      <div class="list" style="margin-top:16px">
+        ${list.map(u => `<div class="item"><a class="t" href="#/teacher/unit/${u.id}" style="flex:1">${esc(u.name)}</a>
+          <span class="muted small">${u.questions?.[0]?.count ?? 0} questions</span></div>`).join('') || '<p class="muted">No units yet.</p>'}
+      </div>`, {
+      check: async () => { const f = app.querySelector('form'); document.getElementById('preview').innerHTML = this.previewHtml(await this.readImport(f)); },
+      import: async f => {
+        const res = await this.readImport(f);
+        document.getElementById('preview').innerHTML = this.previewHtml(res);
+        if (res.errors.length) return;
+        const name = f.uname.value.trim() || (f.file.files[0] ? f.file.files[0].name.replace(/\.[^.]+$/, '') : 'New unit');
+        await this.saveUnit(name, res.questions);
+      },
+      sample: async () => {
+        try {
+          const text = await (await fetch('sample-unit.csv', { cache: 'no-store' })).text();
+          const res = WU.rowsToQuestions(WU.parseTable(text));
+          await this.saveUnit('Sample – La familia y la casa', res.questions);
+        } catch (e) { fail(e); }
+      }
+    });
+  },
+
+  async saveUnit(name, questions) {
+    try {
+      const u = await q(sb.from('units').insert({ name }).select().single());
+      await q(sb.from('questions').insert(questions.map(x => Object.assign({ unit_id: u.id }, x))));
+      toast(`Added ${questions.length} questions`);
+      location.hash = '#/teacher/unit/' + u.id;
+    } catch (e) { fail(e); }
+  },
+
+  async unitPage(id) {
+    const [u, qs] = await Promise.all([
+      q(sb.from('units').select('id,name').eq('id', id).single()),
+      q(sb.from('questions').select('*').eq('unit_id', id).order('level').order('sort'))
+    ]);
+    const n = this.levelCounts(qs);
+    this.shell('units', `
+      <p class="small"><a href="#/teacher/units">← Units</a></p>
+      <h1>${esc(u.name)}</h1>
+      <p class="muted">${qs.length} questions · ${n.map((x, i) => `L${i + 1}: ${x}`).join(' · ')}</p>
+      <div class="table-wrap"><table>
+        <tr><th class="num">Lvl</th><th>Spanish</th><th>English</th><th>Also accept</th><th>Decoys <span class="small">(L4–5)</span></th><th>Word tips</th></tr>
+        ${qs.map(x => `<tr><td class="num">${x.level}</td><td>${esc(x.prompt)}</td><td>${esc(x.answer)}</td>
+          <td class="small">${x.also_accept.map(esc).join('<br>')}</td><td class="small">${x.decoys.map(esc).join(', ')}</td>
+          <td class="small muted">${Object.keys(x.glossary || {}).length || ''}</td></tr>`).join('')}
+      </table></div>
+      <details class="card" style="margin-top:20px"><summary><b>Replace these questions from a sheet</b></summary>
+        <form data-act="replace" style="margin-top:12px" class="stack">${this.importerHtml(false)}
+          <div class="row"><button class="btn primary" type="submit">Replace questions</button></div></form>
+      </details>
+      <p style="margin-top:24px"><button class="btn danger" data-act="del">Delete unit</button></p>
+    `, {
+      replace: async f => {
+        const res = await this.readImport(f);
+        document.getElementById('preview').innerHTML = this.previewHtml(res);
+        if (res.errors.length) return;
+        if (!confirm(`Replace all ${qs.length} questions with ${res.questions.length} new ones?`)) return;
+        try {
+          await q(sb.from('questions').delete().eq('unit_id', id));
+          await q(sb.from('questions').insert(res.questions.map(x => Object.assign({ unit_id: id }, x))));
+          toast('Replaced'); this.unitPage(id);
+        } catch (e) { fail(e); }
+      },
+      del: async () => {
+        if (!confirm(`Delete ${u.name}? Warm-ups that used it (and their results) go too.`)) return;
+        try { await q(sb.from('units').delete().eq('id', id)); location.hash = '#/teacher/units'; } catch (e) { fail(e); }
+      }
+    });
+  }
+};
+
+route();
+</script>
+</body>
+</html>
