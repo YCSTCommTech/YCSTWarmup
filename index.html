@@ -240,8 +240,10 @@ function render(html, handlers, onKey) {
   app.innerHTML = html; acts = handlers || {}; keyHandler = onKey || null;
 }
 app.addEventListener('click', e => {
+  // Forms are handled on submit only; a click inside a form must not trigger it.
   const el = e.target.closest('[data-act]');
-  if (el && acts[el.dataset.act]) { e.preventDefault(); acts[el.dataset.act](el, e); }
+  if (!el || el.tagName === 'FORM' || !acts[el.dataset.act]) return;
+  e.preventDefault(); acts[el.dataset.act](el, e);
 });
 app.addEventListener('submit', e => {
   const f = e.target.closest('form[data-act]');
@@ -925,14 +927,21 @@ const Teacher = {
         <button class="btn primary" type="submit">Add class</button>
       </form>
       <div class="list" style="margin-top:16px">
-        ${list.map(c => `<div class="item"><a class="t" href="#/teacher/class/${c.id}" style="flex:1">${esc(c.name)}</a>
+        ${list.map(c => `<div class="item"><a class="t" href="#/teacher/class/${c.id}" style="flex:1">${c.name ? esc(c.name) : '<span class="muted">(no name)</span>'}</a>
           <span class="muted small">${c.students?.[0]?.count ?? 0} students</span>
-          <a class="btn" href="#/teacher/class/${c.id}" style="text-decoration:none">Roster</a></div>`).join('')
+          <a class="btn" href="#/teacher/class/${c.id}" style="text-decoration:none">Roster</a>
+          <button class="btn danger" data-act="delcls" data-id="${c.id}" data-name="${esc(c.name || 'this unnamed class')}">Delete</button></div>`).join('')
           || '<p class="muted">No classes yet.</p>'}
       </div>`, {
       add: async f => {
-        try { const c = await q(sb.from('classes').insert({ name: f.name.value.trim() }).select().single()); location.hash = '#/teacher/class/' + c.id; }
+        const name = f.name.value.trim();
+        if (!name) return;
+        try { const c = await q(sb.from('classes').insert({ name }).select().single()); location.hash = '#/teacher/class/' + c.id; }
         catch (e) { fail(e); }
+      },
+      delcls: async el => {
+        if (!confirm(`Delete ${el.dataset.name}, its roster, and all its results?`)) return;
+        try { await q(sb.from('classes').delete().eq('id', el.dataset.id)); this.classes(); } catch (e) { fail(e); }
       }
     });
   },
