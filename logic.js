@@ -187,7 +187,51 @@
     };
   }
 
-  const api = { parseTable, rowsToQuestions, parseList, parseGlossary, tokenize, norm, glossKey,
+  // ---------- Zero In import ----------
+  // Columns: word, r1_correct, r1_wrong1-4, r2_correct, r2_wrong1-3,
+  //          r3_correct (the definition), r3_wrong1-3, sentence, image
+  // Two right answers in round 1 or 2: "Photo / Video".
+  const normHead = h => String(h).trim().toLowerCase().replace(/[\s-]+/g, '_');
+
+  function isZeroInTable(rows) {
+    return rows.length > 0 && rows[0].map(normHead).includes('r1_correct');
+  }
+
+  function rowsToZeroIn(rows) {
+    const errors = [];
+    if (!rows.length) return { questions: [], errors: ['The sheet looks empty.'] };
+    const head = rows[0].map(normHead);
+    const col = name => head.indexOf(name);
+    ['word', 'r1_correct', 'r2_correct', 'r3_correct'].forEach(k => {
+      if (col(k) < 0) errors.push(`Missing a "${k}" column.`);
+    });
+    if (errors.length) return { questions: [], errors };
+    const wrongCols = n => head.map((h, i) => (h.startsWith(`r${n}_wrong`) ? i : -1)).filter(i => i >= 0);
+
+    const questions = [];
+    rows.slice(1).forEach((r, i) => {
+      const cell = idx => (idx < 0 ? '' : String(r[idx] || '').trim());
+      const word = cell(col('word'));
+      if (!word) return;
+      const rounds = [1, 2, 3].map(n => {
+        const raw = cell(col(`r${n}_correct`));
+        const correct = n < 3 ? raw.split(/\s+\/\s+/).map(s => s.trim()).filter(Boolean) : (raw ? [raw] : []);
+        const wrong = wrongCols(n).map(cell).filter(Boolean).filter(w => !correct.includes(w));
+        return { correct, wrong };
+      });
+      const bad = rounds.findIndex(rd => !rd.correct.length || !rd.wrong.length);
+      if (bad >= 0) { errors.push(`Row ${i + 2} (${word}): round ${bad + 1} needs a correct answer and at least one wrong one.`); return; }
+      questions.push({
+        qtype: 'zero_in', level: 1, prompt: word, answer: rounds[2].correct[0],
+        data: { rounds, sentence: cell(col('sentence')), image: cell(col('image')) },
+        sort: questions.length
+      });
+    });
+    if (!questions.length && !errors.length) errors.push('No words found under the header row.');
+    return { questions, errors };
+  }
+
+  const api = { parseTable, rowsToQuestions, isZeroInTable, rowsToZeroIn, parseList, parseGlossary, tokenize, norm, glossKey,
     isCorrect, nextLevel, pickQuestion, shuffle, buildTiles, summarize };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.WU = api;

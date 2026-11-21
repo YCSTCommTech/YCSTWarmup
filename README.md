@@ -8,7 +8,7 @@ Adaptive class warm-ups. First module: Spanish sentence builder — students rea
 ## One-time setup (about 10 minutes)
 
 1. **Supabase project.** supabase.com → New project (a new one, separate from JARVIS).
-2. **Database.** SQL Editor → New query → paste all of `schema.sql` → Run. Then do the same with `update-0.2.sql`.
+2. **Database.** SQL Editor → New query → paste all of `schema.sql` → Run. Then do the same with `update-0.2.sql`, then `update-0.3.sql`.
 3. **Teacher logins.** Authentication → Users → Add user → Create new user, once per teacher.
    - Email: `lastname@warmup.local` (or a real email). They sign in with just `lastname`.
    - Password: anything. Tick **Auto Confirm User**.
@@ -38,6 +38,24 @@ Two correct at a level → up one. Two wrong at a level → down one. Questions 
 - **Goal** = correct ÷ goal
 - **Points** = sum of the levels of the questions they got right (rewards harder work)
 
+## Zero In (teacher-paced vocab game)
+
+A second warm-up type. You run it from your screen (projector); students answer on their devices.
+
+1. **Pick a word:** Vote (students pick from 3 random words) or Wheel (spin on the board). A tied vote goes to the wheel.
+2. **Round 1:** general area · **Round 2:** more specific · **Round 3:** the definition.
+   Students tap one answer and can't change it. Counts stay hidden until you tap **Reveal**, then the board shows how many picked each option with the right one highlighted, and each device shows ✓ or ✗.
+3. **Final card:** word + definition + optional sentence and image.
+4. **End for today** closes it. Answers are saved by class and day, like the sentence builder.
+
+To set up: **Units → Add the Zero In sample** (8 Comm Tech words), or import your own list. Then **Warm-ups → pick the Zero In unit → Save and open now**.
+
+Zero In sheet columns (one row per word): `word, r1_correct, r1_wrong1–4, r2_correct, r2_wrong1–3, r3_correct, r3_wrong1–3, sentence, image`.
+- `r3_correct` is the definition shown at the end.
+- Two right answers in round 1 or 2: `Photo / Video`.
+- Empty wrong-answer cells are skipped. `image` is a link to a picture.
+- `zero-in-sample.csv` is the template.
+
 ## Google Sheet template
 
 One tab per unit. Header row:
@@ -63,4 +81,7 @@ Aim for at least 3 questions per level so the difficulty steps have room to work
 - `config.js` — Supabase connection
 - `schema.sql` — database tables, security rules, student functions
 - `update-0.2.sql` — teacher profiles, shared units, class results archive
+- `update-0.3.sql` — Zero In
+- `zeroin.js` — Zero In teacher and student screens
+- `zero-in-sample.csv` — Zero In sample / template
 - `sample-unit.csv` — sample unit / template
