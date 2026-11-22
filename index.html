@@ -319,6 +319,33 @@ fieldset.field input + input { margin-top: 6px; }
 .zi-s-opt.sel { border-color: var(--accent); background: var(--accent-soft); }
 .zi-s-opt:disabled { cursor: default; }
 .zi-s-opt:disabled:not(.sel) { opacity: .55; }
+/* ---------- Deck grid editor ---------- */
+.wrap.full { max-width: none; }
+.gbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 8px; position: sticky; top: 58px; z-index: 6;
+  background: var(--bg); padding: 6px 0; }
+.gzoom { display: inline-flex; align-items: center; gap: 2px; }
+.gzoom .btn { min-width: 36px; padding: 4px 8px; font-size: 1.1rem; }
+.gdirty { font-weight: 800; color: var(--warn); font-size: .9rem; }
+.gscroll { font-size: calc(14px * var(--gz, 1)); overflow: auto; max-height: 72vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.gtable { table-layout: fixed; border-collapse: separate; border-spacing: 0; }
+.gtable th, .gtable td { padding: 0; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); vertical-align: top; }
+.gtable th { position: sticky; top: 0; z-index: 2; background: var(--surface-2); font-size: .74em; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--muted); text-align: left; padding: .6em .7em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gtable .rn { position: sticky; left: 0; z-index: 1; background: var(--surface-2); color: var(--muted); font-size: .78em; text-align: center; padding: .55em .2em; font-weight: 700; }
+.gtable th.rn { z-index: 3; }
+.gtable textarea { display: block; width: 100%; min-height: 0; height: auto; margin: 0; border: 0; border-radius: 0; background: transparent;
+  padding: .45em .6em; font: inherit; font-size: 1em; line-height: 1.35; resize: none; overflow: hidden; color: var(--ink); }
+.gtable textarea:focus { outline: 2px solid var(--accent); outline-offset: -2px; background: var(--surface); position: relative; z-index: 1; }
+.gscroll.nowrap textarea { white-space: pre; overflow: hidden; height: calc(1.35em + .9em); text-overflow: ellipsis; }
+.gscroll.nowrap textarea:focus { overflow-x: auto; }
+.gtable tr.dirty td.rn { box-shadow: inset 4px 0 var(--warn); color: var(--warn); }
+.gtable tr.err td { background: var(--bad-soft); }
+.gtable tr.err td.rn { box-shadow: inset 4px 0 var(--bad); color: var(--bad); }
+.gtable tr.deleted textarea { text-decoration: line-through; opacity: .45; }
+.gtable .ract { white-space: nowrap; text-align: center; padding: .3em .2em; }
+.gicon { border: 0; background: none; color: var(--muted); font-size: 1em; padding: .2em .3em; border-radius: 6px; min-height: 0; }
+.gicon:hover { background: var(--surface-2); color: var(--ink); }
+@media (max-width: 520px) { .gbar { top: 52px; } }
 .pin-cards { display: none; }
 @media print {
   body { background: #fff; color: #000; }
@@ -346,10 +373,11 @@ fieldset.field input + input { margin-top: 6px; }
 <script src="decks.js?v=0.5"></script>
 <script src="zeroin.js?v=0.5"></script>
 <script src="wordreveal.js?v=0.5.1"></script>
-<script src="library.js?v=0.5"></script>
+<script src="grid.js?v=0.6"></script>
+<script src="library.js?v=0.6"></script>
 <script>
 'use strict';
-const VERSION = '0.5.1';
+const VERSION = '0.6';
 const C = window.WARMUP_CONFIG || {};
 const CONFIGURED = /^https?:\/\//.test(C.url || '') && C.key && !/^PASTE/.test(C.key);
 const sb = CONFIGURED ? window.supabase.createClient(C.url, C.key) : null;
@@ -440,6 +468,14 @@ if ('speechSynthesis' in window) speechSynthesis.getVoices();
 
 // ---------- router ----------
 function route() {
+  // Don't lose unsaved edits in a deck's table when navigating away.
+  if (typeof Grids !== 'undefined' && Library.guardHash && location.hash !== Library.guardHash) {
+    if (Library.skipNext) { Library.skipNext = false; }
+    else if (Grids.unsaved() && !confirm('You have unsaved changes in this deck. Leave without saving?')) {
+      Library.skipNext = true; location.hash = Library.guardHash; return;
+    }
+    if (location.hash !== Library.guardHash) { Grids.all = {}; Library.guardHash = null; }
+  } else if (typeof Library !== 'undefined' && Library.skipNext) { Library.skipNext = false; return; }
   clearTimers();
   if (!CONFIGURED) return renderSetup();
   const h = location.hash || '#/';

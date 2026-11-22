@@ -241,7 +241,7 @@
   // Parse pasted/uploaded text into items for a type.
   function importText(type, text) {
     const rows = WU.parseTable(cleanText(text));
-    if (!rows.length) return { items: [], errors: ['The sheet looks empty.'], detected: null };
+    if (!rows.length) return { items: [], rows: [], errors: ['The sheet looks empty.'], detected: null };
     const detected = detectType(rows);
     const t = TYPE[type];
     const map = mapHeader(type, rows[0]);
@@ -249,9 +249,9 @@
     const missing = t.cols.filter(c => (c.req || c.min) && !found.has(c.key)).map(c => c.count ? c.key + '1' : c.key);
     if (missing.length) {
       const hint = detected && detected !== type ? ` This looks like a ${TYPE[detected].name} sheet.` : '';
-      return { items: [], errors: [`Missing column${missing.length > 1 ? 's' : ''}: ${missing.join(', ')}.${hint}`], detected };
+      return { items: [], rows: [], errors: [`Missing column${missing.length > 1 ? 's' : ''}: ${missing.join(', ')}.${hint}`], detected };
     }
-    const items = [], errors = [];
+    const items = [], errors = [], all = [];
     rows.slice(1).forEach((r, i) => {
       const row = {};
       t.cols.forEach(c => { row[c.key] = c.count ? [] : ''; });
@@ -263,11 +263,13 @@
       t.cols.forEach(c => { if (c.count) row[c.key] = Array.from(row[c.key], x => x || '').filter(Boolean); });
       if (t.cols.every(c => c.count ? !row[c.key].length : !row[c.key])) return; // blank row
       const err = checkRow(type, row);
+      all.push({ row, err });
       if (err) { errors.push(`Row ${i + 2}: ${err}.`); return; }
       items.push(rowToItem(type, row, items.length));
     });
     if (!items.length && !errors.length) errors.push('No rows found under the header row.');
-    return { items, errors, detected };
+    // rows: every non-blank row (including ones with problems) for the editable preview.
+    return { items, rows: all, errors, detected };
   }
 
   // ---------- CSV out ----------

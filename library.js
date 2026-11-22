@@ -183,18 +183,21 @@ const Library = {
     `, {
       tpl: () => this.download(`${kind}-template.csv`, DECKS.templateCsv(kind)),
       ai: () => this.copy(DECKS.aiPromptNew(kind), 'AI prompt copied — add your topic where it says [TOPIC]'),
-      check: async () => { last = await this.readImport(kind); this.showPreview(kind, last); },
+      check: async () => { last = this.showPreview(kind, await this.readImport(kind)); },
       empty: async () => {
         const f = app.querySelector('form[data-act=save]');
         if (!f.name.value.trim()) { f.name.focus(); return toast('Give the deck a name first'); }
         try { await this.saveDeck({ name: f.name.value.trim(), folder: f.folder.value.trim(), kind, items: [] }); } catch (e) { fail(e); }
       },
       save: async f => {
-        last = await this.readImport(kind); this.showPreview(kind, last);
-        if (last.errors.length || !last.items.length) return;
-        try { await this.saveDeck({ name: f.name.value.trim(), folder: f.folder.value.trim(), kind, items: last.items }); } catch (e) { fail(e); }
+        if (!last) last = this.showPreview(kind, await this.readImport(kind));
+        if (!last) return;
+        const items = last.collect();
+        if (!items) return toast('Fix the rows shown in red first');
+        if (!items.length) return toast('Add at least one row');
+        try { delete Grids.all.prev; await this.saveDeck({ name: f.name.value.trim(), folder: f.folder.value.trim(), kind, items }); } catch (e) { fail(e); }
       }
-    });
+    }, true);
   },
 
   columnGuide(kind) {
@@ -223,31 +226,28 @@ const Library = {
     return DECKS.importText(kind, text);
   },
 
+  // Editable preview of a pasted sheet: every row, problems in red, fixable in place.
   showPreview(kind, res) {
     const el = document.getElementById('preview');
-    if (!el) return;
-    if (res.errors.length) {
-      el.innerHTML = `<div class="notice bad-notice"><b>${res.items.length ? `${res.items.length} rows are fine, but some need fixing:` : 'This sheet needs fixing:'}</b><br>${res.errors.slice(0, 8).map(esc).join('<br>')}${res.errors.length > 8 ? `<br>…and ${res.errors.length - 8} more` : ''}</div>`;
-      return;
+    if (!el) return null;
+    if (!res.rows || !res.rows.length) {
+      el.innerHTML = `<div class="notice bad-notice"><b>This sheet needs fixing:</b><br>${res.errors.slice(0, 8).map(esc).join('<br>')}</div>`;
+      return null;
     }
-    const plays = DECKS.playable(kind, res.items);
-    el.innerHTML = `<div class="notice good-notice"><b>✓ ${res.items.length} item${res.items.length === 1 ? '' : 's'} ready.</b>
-      ${plays.map(p => `<div class="small">${p.ok ? '▶' : '⚠'} ${esc(p.game.name)}${p.note ? ' — ' + esc(p.note) : ''}</div>`).join('')}</div>
-      ${this.itemsTable(kind, res.items.slice(0, 5), false)}${res.items.length > 5 ? `<p class="small muted">Showing 5 of ${res.items.length}.</p>` : ''}`;
-  },
-
-  // Table of items using the type's columns.
-  itemsTable(kind, items, clickable) {
-    const t = DECKS.TYPE[kind];
-    const rows = items.map(it => DECKS.itemToRow(kind, it));
-    return `<div class="table-wrap"><table class="items">
-      <tr>${t.cols.map(c => `<th>${esc(c.label)}${c.count ? 's' : ''}</th>`).join('')}</tr>
-      ${rows.map((r, i) => `<tr ${clickable ? `class="clickable" data-act="edit" data-i="${i}"` : ''}>${t.cols.map((c, ci) => {
-        const v = c.count ? (r[c.key] || []).filter(Boolean) : r[c.key];
-        const html = c.count ? (v.length ? v.map(esc).join('<br>') : '<span class="muted">—</span>') : (v ? esc(v) : '<span class="muted">—</span>');
-        return `<td class="${ci === 0 ? 'first' : ''} ${c.count || (v && String(v).length > 40) ? 'long' : ''}">${ci === 0 ? `<b>${html}</b>` : html}</td>`;
-      }).join('')}</tr>`).join('')}
-    </table></div>`;
+    el.innerHTML = `<div id="prev-sum"></div><div id="prev-grid" style="margin-top:10px"></div>`;
+    const summary = g => {
+      const good = g.live().filter(r => !DECKS.checkRow(kind, g.compact(r.row)));
+      const bad = g.live().length - good.length;
+      const plays = DECKS.playable(kind, good.map((r, i) => Object.assign({ id: 'p' + i }, DECKS.rowToItem(kind, g.compact(r.row), i))));
+      document.getElementById('prev-sum').innerHTML = `<div class="notice ${bad ? 'bad-notice' : 'good-notice'}">
+        <b>${bad ? `${good.length} rows ready, ${bad} need${bad === 1 ? 's' : ''} fixing — edit them in the table below.` : `✓ ${good.length} row${good.length === 1 ? '' : 's'} ready.`}</b>
+        ${plays.map(p => `<div class="small">${p.ok ? '▶' : '⚠'} ${esc(p.game.name)}${p.note ? ' — ' + esc(p.note) : ''}</div>`).join('')}
+        <div class="small muted" style="margin-top:4px">You can edit any cell before saving.</div></div>`;
+    };
+    const g = new DeckGrid('prev', kind, res.rows.map(r => ({ row: r.row, err: r.err })), { mode: 'memory', onChange: summary });
+    g.mount('prev-grid');
+    summary(g);
+    return g;
   },
 
   // ===================================================================
@@ -258,13 +258,14 @@ const Library = {
       q(sb.from('units').select('id,name,kind,folder,teacher_id,created_at').eq('id', id).single()),
       q(sb.from('questions').select('*').eq('unit_id', id).order('sort').order('level'))
     ]);
-    const kind = d.kind, t = DECKS.TYPE[kind];
+    const kind = d.kind;
     if (kind === 'sentence') items.sort((a, b) => a.level - b.level || a.sort - b.sort);
     const plays = DECKS.playable(kind, items);
     const soon = DECKS.SOON[kind] || [];
     const mine = d.teacher_id === Teacher.user.id;
-    const L = this.L = { d, items, kind };
-    let last = null;
+    this.L = { d, items, kind };
+    let prevGrid = null;
+    this.guardHash = location.hash;
 
     Teacher.shell('library', `
       <p class="small"><a href="#/teacher/library">← Library</a>${d.folder ? ` · 📁 ${esc(d.folder)}` : ''}</p>
@@ -280,14 +281,12 @@ const Library = {
       </div>
 
       <div class="deck-actions">
-        <button class="btn primary" data-act="add">+ Add item</button>
         <button class="btn" data-act="csv">⬇ Download CSV</button>
         <button class="btn" data-act="toggleUpd">⬆ Update from sheet</button>
         <button class="btn" data-act="ai">✨ Copy AI prompt</button>
         <span class="spacer"></span>
         ${mine ? '<button class="btn danger" data-act="del">Delete deck</button>' : ''}
       </div>
-      <p class="small muted" style="margin:6px 0 0">To edit lots at once: <b>Download CSV</b> → edit in Google Sheets → <b>Update from sheet</b>. The AI prompt fills in any blank cells (like missing wrong answers) and you paste its answer back here.</p>
 
       <form class="card stack" id="upd" data-act="apply" hidden style="margin-top:14px">
         <h2>Update from sheet</h2>
@@ -300,43 +299,50 @@ const Library = {
         <div class="row"><button class="btn" type="button" data-act="check">Check sheet</button><button class="btn primary" type="submit">Apply</button></div>
       </form>
 
-      <div class="section-title">Items · tap one to edit</div>
-      ${items.length ? this.itemsTable(kind, items, true) : `<div class="card center muted">No items yet. Add one, or update from a sheet.</div>`}
+      <div class="section-title">Items · click any cell to edit · Enter moves down</div>
+      <div id="deck-grid"></div>
       <div id="modal" class="modal" hidden></div>
     `, {
       run: el => { const r = store.get('run') || {}; store.set('run', Object.assign(r, { game: el.dataset.g, deck: d.id })); location.hash = '#/teacher'; },
       csv: () => this.download(`${this.fileName(d.name)}.csv`, DECKS.itemsToCsv(kind, items)),
       ai: () => this.copy(DECKS.aiPromptFill(kind, items), 'AI prompt copied, with this deck included'),
       toggleUpd: () => { const f = document.getElementById('upd'); f.hidden = !f.hidden; if (!f.hidden) f.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
-      check: async () => { last = await this.readImport(kind); this.showPreview(kind, last); },
+      check: async () => { prevGrid = this.showPreview(kind, await this.readImport(kind)); },
       apply: async f => {
-        last = await this.readImport(kind); this.showPreview(kind, last);
-        if (last.errors.length || !last.items.length) return;
+        if (!prevGrid) prevGrid = this.showPreview(kind, await this.readImport(kind));
+        if (!prevGrid) return;
+        const newItems = prevGrid.collect();
+        if (!newItems) return toast('Fix the rows shown in red first');
+        if (!newItems.length) return toast('No rows to add');
+        if (Grids.unsaved() && !confirm('You have unsaved edits in the table. Updating from the sheet will discard them. Continue?')) return;
         const append = f.mode.value === 'append';
-        if (!append && !confirm(`Replace all ${items.length} items with ${last.items.length} from the sheet?`)) return;
+        if (!append && !confirm(`Replace all ${items.length} items with ${newItems.length} from the sheet?`)) return;
         try {
           const start = append ? Math.max(-1, ...items.map(x => x.sort)) + 1 : 0;
           if (!append) await q(sb.from('questions').delete().eq('unit_id', id));
-          await q(sb.from('questions').insert(last.items.map((x, i) => Object.assign({}, x, { unit_id: id, sort: start + i }))));
-          toast(append ? `Added ${last.items.length}` : 'Replaced'); this.deck(id);
+          await q(sb.from('questions').insert(newItems.map((x, i) => Object.assign({}, x, { unit_id: id, sort: start + i }))));
+          delete Grids.all.main;
+          toast(append ? `Added ${newItems.length}` : 'Replaced'); this.deck(id);
         } catch (e) { fail(e); }
       },
-      add: () => this.editItem(null),
-      edit: el => this.editItem(items[+el.dataset.i]),
       rename: () => this.renameModal(),
       closeModal: () => { document.getElementById('modal').hidden = true; },
-      saveItem: f => this.saveItem(f),
-      delItem: () => this.deleteItem(),
       saveRename: f => this.saveRename(f),
       del: async () => {
         if (!confirm(`Delete ${d.name}?`)) return;
-        try { await q(sb.from('units').delete().eq('id', id)); location.hash = '#/teacher/library'; }
+        try { delete Grids.all.main; await q(sb.from('units').delete().eq('id', id)); location.hash = '#/teacher/library'; }
         catch (e) {
           if (e.code === '23503') toast('This deck has been used in warm-ups, so it stays to keep those results.');
           else fail(e);
         }
       }
-    });
+    }, true);
+
+    delete Grids.all.prev;
+    const grid = new DeckGrid('main', kind, items.map(it => ({ id: it.id, sort: it.sort, row: DECKS.itemToRow(kind, it) })),
+      { mode: 'db', unitId: id, fullToggle: true, onSaved: () => this.deck(id) });
+    grid.mount('deck-grid');
+    if (!items.length) grid.addRow();
   },
 
   openModal(html) {
@@ -344,55 +350,6 @@ const Library = {
     m.innerHTML = `<div class="modal-card">${html}</div>`;
     m.hidden = false;
     const first = m.querySelector('input, textarea'); if (first) first.focus();
-  },
-
-  editItem(it) {
-    const { kind } = this.L, t = DECKS.TYPE[kind];
-    this.L.editing = it;
-    const row = it ? DECKS.itemToRow(kind, it) : {};
-    const longKeys = ['definition', 'sentence', 'translation', 'explanation', 'reveal', 'prompt', 'question', 'notes', 'word_tips'];
-    const field = (c) => {
-      if (c.count) {
-        const vals = row[c.key] || [];
-        return `<fieldset class="field"><legend>${esc(c.label)}s ${c.min ? `<span class="req">at least ${c.min}</span>` : ''}</legend>
-          ${c.hint ? `<div class="hint">${esc(c.hint)}</div>` : ''}
-          ${Array.from({ length: c.count }, (_, i) => `<input type="text" name="${c.key}__${i}" value="${esc(vals[i] || '')}" placeholder="${esc(c.label)} ${i + 1}">`).join('')}</fieldset>`;
-      }
-      const v = esc(row[c.key] || '');
-      const input = longKeys.includes(c.key) ? `<textarea name="${c.key}" rows="2">${v}</textarea>` : `<input type="text" name="${c.key}" value="${v}">`;
-      return `<label class="field"><span>${esc(c.label)} ${c.req ? '<span class="req">required</span>' : ''}</span>${input}${c.hint ? `<div class="hint">${esc(c.hint)}</div>` : ''}</label>`;
-    };
-    this.openModal(`<form class="stack" data-act="saveItem">
-      <div class="row"><h2 style="margin:0">${it ? 'Edit item' : 'New item'}</h2><span class="spacer"></span><button class="link" type="button" data-act="closeModal">Close</button></div>
-      ${t.cols.map(field).join('')}
-      <p id="item-err" class="error small"></p>
-      <div class="row"><button class="btn primary" type="submit">Save</button><button class="btn" type="button" data-act="closeModal">Cancel</button>
-        <span class="spacer"></span>${it ? '<button class="btn danger" type="button" data-act="delItem">Delete item</button>' : ''}</div>
-    </form>`);
-  },
-
-  async saveItem(f) {
-    const { kind, d, items, editing } = this.L, t = DECKS.TYPE[kind];
-    const row = {};
-    t.cols.forEach(c => {
-      if (c.count) row[c.key] = Array.from({ length: c.count }, (_, i) => f.elements[`${c.key}__${i}`].value.trim()).filter(Boolean);
-      else row[c.key] = f.elements[c.key].value.trim();
-    });
-    const err = DECKS.checkRow(kind, row);
-    if (err) { document.getElementById('item-err').textContent = 'This item ' + err + '.'; return; }
-    const sort = editing ? editing.sort : Math.max(-1, ...items.map(x => x.sort)) + 1;
-    const it = DECKS.rowToItem(kind, row, sort);
-    try {
-      if (editing) await q(sb.from('questions').update(it).eq('id', editing.id));
-      else await q(sb.from('questions').insert(Object.assign({ unit_id: d.id }, it)));
-      toast('Saved'); this.deck(d.id);
-    } catch (e) { fail(e); }
-  },
-
-  async deleteItem() {
-    const { d, editing } = this.L;
-    if (!editing || !confirm('Delete this item?')) return;
-    try { await q(sb.from('questions').delete().eq('id', editing.id)); toast('Deleted'); this.deck(d.id); } catch (e) { fail(e); }
   },
 
   async renameModal() {

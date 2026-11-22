@@ -41,7 +41,7 @@ A deck is a spreadsheet: one row per item. The deck **type** sets the columns, a
 
 **Making a deck:** Library → **+ New deck** → pick a type → **Download template** (or **Copy AI prompt**, paste it into ChatGPT/Claude/Gemini with your topic) → paste the filled sheet or upload the CSV → **Check sheet** → **Save deck**. You can also start empty and add items one at a time.
 
-**Editing:** tap any item on the deck page to edit it, or **+ Add item**. To edit lots at once: **Download CSV** → edit in Google Sheets → **Update from sheet** (replace all, or add to the end). **Copy AI prompt** on a deck includes the whole deck and asks the AI to fill only the blank cells (e.g. missing wrong answers).
+**Editing:** the deck page is a spreadsheet-style table: click any cell and type, Enter moves down a row, **+ Add row** adds one, ✕ deletes (with undo), ⤢ opens a row in a form. Edits are held until you click **Save changes** (rows with a problem turn red and block the save). Use **− / +** to zoom, **Wrap text** to show long cells in full or on one line, and **Full width** to use the whole screen — these are remembered. The pasted-sheet preview shows every row, and you can fix problem rows in place before saving. For big rewrites you can still **Download CSV** → edit in Google Sheets → **Update from sheet** (replace all, or add to the end). **Copy AI prompt** on a deck includes the whole deck and asks the AI to fill only the blank cells.
 
 Lists use `|` inside one cell (`also_accept`, `decoys`, `word_tips`). Two right categories use ` / ` (`Photo / Video`).
 
@@ -81,6 +81,7 @@ Reverse Zero In, self-paced. Each student gets the deck in shuffled order. Clues
 - `wordreveal.js` — Word Reveal student screen
 - `decks.js` — deck types, templates, import/export, AI prompts
 - `library.js` — Library pages
+- `grid.js` — spreadsheet-style deck editor
 - `zeroin.js` — Zero In teacher and student screens
 - `vocab-sample.csv` — Comm Tech vocabulary sample
 - `sample-unit.csv` — Spanish sentence pairs sample
