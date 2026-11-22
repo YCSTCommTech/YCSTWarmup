@@ -8,8 +8,6 @@
 'use strict';
 
 const ZeroIn = {
-  PROMPTS: ['Which area does this word belong to?', 'Narrow it down:', 'What does it mean?'],
-  ROUND_NAMES: ['General', 'More specific', 'Definition'],
 
   shuffle(arr) {
     const a = arr.slice();
@@ -92,14 +90,17 @@ const ZeroIn = {
     await this.save(Object.assign({}, lv, { winner: lv.cands[idx].id, angle: 360 * 6 + (360 - (idx * seg + seg / 2)) }));
   },
 
+  // Each round's options + right answers are worked out from the deck here and
+  // stored in sessions.live; students only ever see the right answers after Reveal.
+  roundState(plan, r) {
+    const rd = plan[r];
+    return { r, total: plan.length, rname: rd.name, prompt: rd.prompt, options: rd.options, correct: rd.correct, revealed: false };
+  },
+
   async startWord(id) {
     const w = this.H.byId.get(id);
-    const rd = w.data.rounds[0];
-    await this.save({
-      phase: 'round', seq: this.nextSeq(), qid: id, r: 0, revealed: false,
-      options: this.shuffle(rd.correct.concat(rd.wrong)),
-      played: this.H.live.played.concat(id)
-    });
+    const plan = DECKS.zeroInPlan(w, this.H.words);
+    await this.save(Object.assign({ phase: 'round', seq: this.nextSeq(), qid: id, plan, played: this.H.live.played.concat(id) }, this.roundState(plan, 0)));
   },
 
   async reveal() {
@@ -120,9 +121,8 @@ const ZeroIn = {
       return top.length > 1 ? this.startWheel(top) : this.startWord(top[0].id);
     }
     if (lv.phase === 'wheel') return this.startWord(lv.winner);
-    if (lv.phase === 'round' && lv.r < 2) {
-      const rd = H.byId.get(lv.qid).data.rounds[lv.r + 1];
-      return this.save({ phase: 'round', seq: this.nextSeq(), qid: lv.qid, r: lv.r + 1, revealed: false, options: this.shuffle(rd.correct.concat(rd.wrong)) });
+    if (lv.phase === 'round' && lv.r < lv.total - 1) {
+      return this.save(Object.assign({ phase: 'round', seq: this.nextSeq(), qid: lv.qid, plan: lv.plan }, this.roundState(lv.plan, lv.r + 1)));
     }
     if (lv.phase === 'round') return this.save({ phase: 'final', seq: this.nextSeq(), qid: lv.qid });
   },
@@ -193,12 +193,12 @@ const ZeroIn = {
       ctl = !lv.winner ? btn('Spin', 'spin', 'primary big') + btn('Back', 'toPick')
         : `<span id="zi-start" ${H.animateSpin ? 'style="visibility:hidden"' : ''}>${btn('Start round 1', 'next', 'primary big')}</span>`;
     } else if (lv.phase === 'round') {
-      const w = H.byId.get(lv.qid), rd = w.data.rounds[lv.r];
-      proj = `<div class="zi-tag">Round ${lv.r + 1} of 3 · ${this.ROUND_NAMES[lv.r]}</div>
-        <div class="zi-big">${esc(w.prompt)}</div><div class="zi-prompt">${this.PROMPTS[lv.r]}</div>
-        ${this.bars(lv.options.map(o => ({ key: o, label: o })), k => rd.correct.includes(k), lv.revealed)}
+      const w = H.byId.get(lv.qid);
+      proj = `<div class="zi-tag">Round ${lv.r + 1} of ${lv.total} · ${esc(lv.rname)}</div>
+        <div class="zi-big">${esc(w.prompt)}</div><div class="zi-prompt">${esc(lv.prompt)}</div>
+        ${this.bars(lv.options.map(o => ({ key: o, label: o })), k => lv.correct.includes(k), lv.revealed)}
         <div class="zi-status">${lv.revealed ? `${H.answered} answered` : waiting}</div>`;
-      ctl = lv.revealed ? btn(lv.r < 2 ? `Next: Round ${lv.r + 2}` : 'Show the definition', 'next', 'primary big')
+      ctl = lv.revealed ? btn(lv.r < lv.total - 1 ? `Next: Round ${lv.r + 2}` : 'Show the definition', 'next', 'primary big')
         : btn('Reveal', 'reveal', 'primary big') + btn('Skip word', 'toPick');
     } else if (lv.phase === 'final') {
       const w = H.byId.get(lv.qid);
@@ -211,7 +211,7 @@ const ZeroIn = {
     }
 
     Teacher.shell('', `
-      <p class="small"><a href="#/teacher">← Warm-ups</a> · ${esc(s.classes?.name || '')} · ${esc(s.units?.name || '')}</p>
+      <p class="small"><a href="#/teacher">← Run</a> · ${esc(s.classes?.name || '')} · ${esc(s.units?.name || '')}</p>
       ${lv.phase === 'pick' ? `<div class="join-banner" style="margin-bottom:14px">Students go to <code>${esc(studentUrl())}</code>, pick <b>${esc(s.classes?.name || 'their class')}</b>, and type their PIN.</div>` : ''}
       <div class="zi-proj" id="zi-proj">${proj}</div>
       <div class="zi-controls">${ctl}<span class="spacer"></span><button class="btn" data-act="full">⛶ Full screen</button></div>
@@ -285,13 +285,13 @@ const ZeroIn = {
         ${s.cands.map(c => `<button class="zi-s-opt ${s.mine === c.id ? 'sel' : ''}" data-act="pick" data-v="${esc(c.id)}" ${s.mine ? 'disabled' : ''}>${esc(c.word)}</button>`).join('')}
         <p class="small muted center">${s.mine ? 'Vote in — eyes on the board' : 'Tap one'}</p></div>`;
     } else if (s.phase === 'round' && !s.revealed) {
-      body = `<div class="card"><div class="kicker">Round ${s.r + 1} of 3</div><div class="zi-s-word">${esc(s.word)}</div>
-        <p class="muted" style="margin:0 0 12px">${this.PROMPTS[s.r]}</p>
+      body = `<div class="card"><div class="kicker">Round ${s.r + 1} of ${s.total}</div><div class="zi-s-word">${esc(s.word)}</div>
+        <p class="muted" style="margin:0 0 12px">${esc(s.prompt || '')}</p>
         ${s.options.map(o => `<button class="zi-s-opt ${s.mine === o ? 'sel' : ''}" data-act="pick" data-v="${esc(o)}" ${s.mine ? 'disabled' : ''}>${esc(o)}</button>`).join('')}
         <p class="small muted center">${s.mine ? 'Locked in — wait for the reveal' : 'Tap your answer'}</p></div>`;
     } else if (s.phase === 'round') {
       const ok = s.mine && (s.correct || []).includes(s.mine);
-      body = `<div class="card"><div class="kicker">Round ${s.r + 1} of 3</div><div class="zi-s-word">${esc(s.word)}</div>
+      body = `<div class="card"><div class="kicker">Round ${s.r + 1} of ${s.total}</div><div class="zi-s-word">${esc(s.word)}</div>
         <div class="feedback ${ok ? 'good' : 'bad'}"><div class="head">${!s.mine ? 'No answer' : ok ? '✓ Nailed it' : '✗ Not this time'}</div>
         ${s.mine && !ok ? `<div>You said: ${esc(s.mine)}</div>` : ''}<div>Answer: <b>${(s.correct || []).map(esc).join(' or ')}</b></div></div>
         <p class="small muted center" style="margin-top:12px">Look up — the class results are on the board.</p></div>`;

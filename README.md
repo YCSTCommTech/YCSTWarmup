@@ -8,7 +8,7 @@ Adaptive class warm-ups. First module: Spanish sentence builder — students rea
 ## One-time setup (about 10 minutes)
 
 1. **Supabase project.** supabase.com → New project (a new one, separate from JARVIS).
-2. **Database.** SQL Editor → New query → paste all of `schema.sql` → Run. Then do the same with `update-0.2.sql`, then `update-0.3.sql`.
+2. **Database.** SQL Editor → New query → paste all of `schema.sql` → Run. Then do the same with `update-0.2.sql`, `update-0.3.sql`, and `update-0.4.sql`, in that order.
 3. **Teacher logins.** Authentication → Users → Add user → Create new user, once per teacher.
    - Email: `lastname@warmup.local` (or a real email). They sign in with just `lastname`.
    - Password: anything. Tick **Auto Confirm User**.
@@ -18,62 +18,49 @@ Adaptive class warm-ups. First module: Spanish sentence builder — students rea
 5. **Connect the site.** Project Settings → API. Copy the Project URL and the anon / publishable key into `config.js`.
 6. **Publish.** GitHub repo → Settings → Pages → Deploy from branch → `main` / root.
 
-## Using it
+## How it's organized
 
-1. **Classes** → add a class → paste names (one per line). Each student gets a PIN. "Print PIN cards" makes cut-out cards.
-2. **Units** → paste a Google Sheet tab (or upload it as CSV). "Add the sample unit" loads 20 test questions.
-3. **Warm-ups** → pick class + unit, set the goal (correct answers), time limit (minutes) and starting level → Save for later.
-4. When class starts → **Open now**. Students waiting on the PIN screen start automatically.
-5. **Close warm-up** at the end. Results stay on that warm-up's page; tap a student to see every answer.
-6. **Classes → Results** shows every warm-up the class has done: students down the side, days across the top. Tap a day for its full results. "Copy for spreadsheet" copies the grid (correct answers per day, "absent" if they didn't join).
+The teacher page has three tabs:
 
-### How a student finishes
-Whichever comes first: they hit the goal, their time runs out (counted from when *they* joined), or the teacher closes it.
+- **Run** — pick a class, a game, and a deck → **Open now** (or save for later). Open and recent warm-ups are listed underneath.
+- **Library** — all decks, grouped by folder (course or unit), with search and type filters. Every teacher can use and edit every deck; only the teacher who made a deck can delete it, and not once it's been used.
+- **Classes** — rosters, PINs (printable cards), and the results archive for each class.
 
-### How difficulty moves
-Two correct at a level → up one. Two wrong at a level → down one. Questions come from the student's level first, then the nearest level. Decoy tiles appear at levels 4–5.
+## Decks
+
+A deck is a spreadsheet: one row per item. The deck **type** sets the columns, and each game plays one type, so a deck can feed every game of that type.
+
+| Type | Required columns | Optional columns | Games |
+|---|---|---|---|
+| 📖 Vocabulary | `term, definition` | `category, subcategory, wrong_def1–3, sentence, image` | Zero In · soon: Reverse Wordle, Flashcards, Matching |
+| 🗣️ Sentence pairs | `level, sentence, translation` | `also_accept, decoys, word_tips, notes` | Sentence Builder · soon: Reverse builder, Listen and type |
+| ☑️ Multiple choice | `question, correct, wrong1` | `wrong2–3, image, explanation, level` | soon: Quiz race, Adaptive quiz |
+| 💡 Prompt and reveal | `prompt, reveal` | `media, constraint` | soon: How would you make it?, Quick write |
+| 🗂️ Sort into groups | `item, group` | | soon: Bucket sort |
+| 🔢 Put in order | `title, step1, step2` | `step3–8` | soon: Sequence it |
+
+**Making a deck:** Library → **+ New deck** → pick a type → **Download template** (or **Copy AI prompt**, paste it into ChatGPT/Claude/Gemini with your topic) → paste the filled sheet or upload the CSV → **Check sheet** → **Save deck**. You can also start empty and add items one at a time.
+
+**Editing:** tap any item on the deck page to edit it, or **+ Add item**. To edit lots at once: **Download CSV** → edit in Google Sheets → **Update from sheet** (replace all, or add to the end). **Copy AI prompt** on a deck includes the whole deck and asks the AI to fill only the blank cells (e.g. missing wrong answers).
+
+Lists use `|` inside one cell (`also_accept`, `decoys`, `word_tips`). Two right categories use ` / ` (`Photo / Video`).
+
+## Games
+
+### Sentence Builder (Sentence pairs decks)
+Students read and hear a sentence and rebuild the translation from word tiles. Self-paced; difficulty moves 1–5 (two right → up, two wrong → down). A student finishes at the goal, at their time limit, or when you close it. Decoy tiles show at levels 4–5.
+
+### Zero In (Vocabulary decks)
+You run it from the board; students answer on their devices.
+1. Pick a word by **Vote** (3 random words) or **Wheel**. A tied vote goes to the wheel.
+2. **Category** round → **Subcategory** round → **Definition** round. Students lock in one answer; counts stay hidden until you tap **Reveal**.
+3. Final card: term, definition, sentence, image.
+
+Wrong answers are built from the deck: category options come from the deck's other categories, subcategory options prefer the same category, and definition options use `wrong_def1–3` if filled, otherwise other terms' definitions. A deck without categories or subcategories just plays fewer rounds.
 
 ### Score
-- **Accuracy** = correct ÷ answered
-- **Goal** = correct ÷ goal
-- **Points** = sum of the levels of the questions they got right (rewards harder work)
-
-## Zero In (teacher-paced vocab game)
-
-A second warm-up type. You run it from your screen (projector); students answer on their devices.
-
-1. **Pick a word:** Vote (students pick from 3 random words) or Wheel (spin on the board). A tied vote goes to the wheel.
-2. **Round 1:** general area · **Round 2:** more specific · **Round 3:** the definition.
-   Students tap one answer and can't change it. Counts stay hidden until you tap **Reveal**, then the board shows how many picked each option with the right one highlighted, and each device shows ✓ or ✗.
-3. **Final card:** word + definition + optional sentence and image.
-4. **End for today** closes it. Answers are saved by class and day, like the sentence builder.
-
-To set up: **Units → Add the Zero In sample** (8 Comm Tech words), or import your own list. Then **Warm-ups → pick the Zero In unit → Save and open now**.
-
-Zero In sheet columns (one row per word): `word, r1_correct, r1_wrong1–4, r2_correct, r2_wrong1–3, r3_correct, r3_wrong1–3, sentence, image`.
-- `r3_correct` is the definition shown at the end.
-- Two right answers in round 1 or 2: `Photo / Video`.
-- Empty wrong-answer cells are skipped. `image` is a link to a picture.
-- `zero-in-sample.csv` is the template.
-
-## Google Sheet template
-
-One tab per unit. Header row:
-
-| level | spanish | english | also_accept | decoys | glossary | notes |
-|---|---|---|---|---|---|---|
-| 2 | Mi hermano tiene doce años. | My brother is twelve years old | My brother is twelve | has \| sister | hermano = brother \| tiene = has | Spanish "has" years |
-
-- **level** 1–5 (required)
-- **spanish**, **english** (required). Tiles are made from the English words.
-- **also_accept** other correct answers, separated by `|`. They must be buildable from the tiles (plus decoys).
-- **decoys** extra wrong tiles, separated by `|` (only shown at levels 4–5).
-- **glossary** word tips shown when a student taps an underlined Spanish word: `word = meaning`, separated by `|`. Phrases work too (`me gusta = I like`).
-- **notes** shown after the student answers.
-
-Aim for at least 3 questions per level so the difficulty steps have room to work.
-
-`sample-unit.csv` is a filled-in example — in Google Sheets: File → Import → Upload.
+- **Accuracy** = correct ÷ answered · **Goal** = correct ÷ goal (Sentence Builder) · **Points** = sum of the levels of right answers
+- **Classes → Results** shows every warm-up for a class (students × days). "Copy for spreadsheet" copies the grid.
 
 ## Files
 - `index.html` — the app (student + teacher)
@@ -82,6 +69,9 @@ Aim for at least 3 questions per level so the difficulty steps have room to work
 - `schema.sql` — database tables, security rules, student functions
 - `update-0.2.sql` — teacher profiles, shared units, class results archive
 - `update-0.3.sql` — Zero In
+- `update-0.4.sql` — deck library, folders, game per warm-up
+- `decks.js` — deck types, templates, import/export, AI prompts
+- `library.js` — Library pages
 - `zeroin.js` — Zero In teacher and student screens
-- `zero-in-sample.csv` — Zero In sample / template
-- `sample-unit.csv` — sample unit / template
+- `vocab-sample.csv` — Comm Tech vocabulary sample
+- `sample-unit.csv` — Spanish sentence pairs sample

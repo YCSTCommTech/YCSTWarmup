@@ -73,7 +73,7 @@ h2 { font-size: 1.2rem; margin: 0 0 12px; font-weight: 800; }
 .link { background: none; border: none; color: var(--accent); font-weight: 700; padding: 6px 2px; }
 label.field { display: block; font-weight: 700; font-size: .9rem; }
 label.field > span { display: block; margin-bottom: 4px; color: var(--muted); }
-input[type=text], input[type=password], input[type=number], input[type=email], select, textarea {
+input[type=text], input[type=password], input[type=number], input[type=email], input[type=search], select, textarea {
   width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px;
   background: var(--surface-2); min-height: 44px;
 }
@@ -205,6 +205,55 @@ td.num, th.num { text-align: right; white-space: nowrap; }
 .grid td.hit { background: var(--good-soft); color: var(--good); }
 .grid td.part { background: var(--warn-soft); }
 .grid td.miss { color: var(--muted); background: var(--surface-2); }
+/* ---------- Library ---------- */
+.type-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 99px; font-size: .8rem; font-weight: 800;
+  background: var(--accent-soft); color: var(--accent); white-space: nowrap; }
+.type-pill.t-sentence { background: var(--warn-soft); color: var(--warn); }
+.type-pill.t-mcq { background: var(--good-soft); color: var(--good); }
+.type-pill.t-prompt { background: var(--bad-soft); color: var(--bad); }
+.type-pill.t-sort, .type-pill.t-order { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+.lib-tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 14px 0 4px; }
+.lib-tools input[type=search] { flex: 1 1 220px; width: auto; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 99px; padding: 7px 12px; font-weight: 800; font-size: .88rem; min-height: 38px; }
+.chip-btn.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.deck-grid, .type-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+.deck-card, .type-card { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 14px; box-shadow: var(--shadow); text-decoration: none; color: var(--ink); transition: border-color .12s, transform .12s; }
+.deck-card:hover, .type-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+.deck-card[hidden], section[hidden] { display: none; }
+.deck-name { font-weight: 900; font-size: 1.08rem; line-height: 1.25; margin-top: 4px; }
+.deck-plays { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.play-chip { display: inline-block; padding: 3px 9px; border-radius: 8px; font-size: .78rem; font-weight: 800; border: 1px solid var(--line); background: var(--surface-2); color: var(--muted); }
+.play-chip.ok { background: var(--good-soft); color: var(--good); border-color: transparent; }
+.play-chip.warn { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.type-icon { font-size: 1.8rem; line-height: 1; }
+.type-card { padding: 18px; }
+table.guide td { vertical-align: top; } table.guide code { font-weight: 800; white-space: nowrap; }
+.req { font-size: .75rem; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+.good-notice { background: var(--good-soft); } .bad-notice { background: var(--bad-soft); }
+#preview .table-wrap { margin-top: 10px; }
+table.items td { white-space: nowrap; } table.items td.long { white-space: normal; min-width: 180px; max-width: 320px; font-size: .9rem; }
+table.items td.first { white-space: normal; min-width: 120px; }
+.plays-box { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 6px 14px; margin: 12px 0; }
+.play-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 8px 0; }
+.play-row + .play-row { border-top: 1px solid var(--line); }
+.small-btn { min-height: 36px; padding: 6px 12px; font-size: .9rem; }
+.deck-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+label.radio { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; }
+.hint { font-size: .8rem; color: var(--muted); font-weight: 600; margin-top: 4px; }
+fieldset.field { border: none; padding: 0; margin: 0; } fieldset.field legend { font-weight: 700; font-size: .9rem; color: var(--muted); padding: 0; margin-bottom: 4px; }
+fieldset.field input + input { margin-top: 6px; }
+.modal { position: fixed; inset: 0; z-index: 40; background: rgba(15, 23, 21, .45); display: flex; align-items: flex-start; justify-content: center; padding: 24px 16px; overflow-y: auto; }
+.modal[hidden] { display: none; }
+.modal-card { background: var(--surface); border-radius: var(--radius); padding: 20px; width: 100%; max-width: 620px; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+.flabel { display: block; font-weight: 700; font-size: .9rem; color: var(--muted); margin-bottom: 6px; }
+.game-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.game-card { position: relative; display: flex; gap: 10px; align-items: flex-start; padding: 14px; border: 2px solid var(--line); border-radius: 14px; cursor: pointer; background: var(--surface-2); }
+.game-card:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.game-card input { margin-top: 4px; accent-color: var(--accent); }
+.game-body { display: flex; flex-direction: column; gap: 3px; }
+.game-name { font-weight: 900; font-size: 1.05rem; }
 /* ---------- Zero In ---------- */
 .zi-proj { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
   padding: clamp(18px, 3vw, 36px); min-height: 460px; display: flex; flex-direction: column; }
@@ -251,6 +300,8 @@ td.num, th.num { text-align: right; white-space: nowrap; }
   .pin-card .n { font-weight: 900; font-size: 1.1rem; } .pin-card .p { font-size: 1.8rem; font-weight: 900; letter-spacing: .2em; }
 }
 @media (max-width: 520px) {
+  .topbar { padding: 10px 12px; }
+  .topbar nav a { padding: 8px 9px; }
   h1 { font-size: 1.45rem; }
   .es { font-size: 1.25rem; }
   .tile { font-size: 1.05rem; padding: 7px 11px; }
@@ -263,11 +314,13 @@ td.num, th.num { text-align: right; white-space: nowrap; }
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
-<script src="logic.js?v=0.3"></script>
-<script src="zeroin.js?v=0.3"></script>
+<script src="logic.js?v=0.4"></script>
+<script src="decks.js?v=0.4"></script>
+<script src="zeroin.js?v=0.4"></script>
+<script src="library.js?v=0.4"></script>
 <script>
 'use strict';
-const VERSION = '0.3';
+const VERSION = '0.4';
 const C = window.WARMUP_CONFIG || {};
 const CONFIGURED = /^https?:\/\//.test(C.url || '') && C.key && !/^PASTE/.test(C.key);
 const sb = CONFIGURED ? window.supabase.createClient(C.url, C.key) : null;
@@ -303,6 +356,10 @@ app.addEventListener('click', e => {
 app.addEventListener('submit', e => {
   const f = e.target.closest('form[data-act]');
   if (f && acts[f.dataset.act]) { e.preventDefault(); acts[f.dataset.act](f, e); }
+});
+app.addEventListener('input', e => {
+  const el = e.target.closest('[data-input]');
+  if (el && acts[el.dataset.input]) acts[el.dataset.input](el, e);
 });
 app.addEventListener('change', e => {
   const el = e.target.closest('[data-change]');
@@ -493,7 +550,7 @@ const Student = {
 
   begin(token, st) {
     clearTimers();
-    if (st.session.kind === 'zero_in') return ZeroIn.student(token, st);
+    if (st.session.game === 'zero_in' || st.session.kind === 'zero_in') return ZeroIn.student(token, st);
     const P = this.P = {
       token, name: st.student_name, session: st.session,
       level: st.participant.current_level, c: 0, w: 0,
@@ -715,20 +772,21 @@ const Teacher = {
       if (page === 'classes') return await this.classes();
       if (page === 'class' && id && sub === 'roster') return await this.classPage(id);
       if (page === 'class' && id) return await this.classResults(id);
-      if (page === 'units') return await this.units();
-      if (page === 'unit' && id) return await this.unitPage(id);
+      if (page === 'library' || page === 'units' || page === 'unit') return await Library.list();
+      if (page === 'new') return await Library.create(id);
+      if (page === 'deck' && id) return await Library.deck(id);
       if (page === 'session' && id) return await this.sessionPage(id);
       return await this.home();
     } catch (e) { fail(e); }
   },
 
   shell(active, body, handlers, wide) {
-    const nav = [['', 'Warm-ups'], ['classes', 'Classes'], ['units', 'Units']];
+    const nav = [['', 'Run'], ['library', 'Library'], ['classes', 'Classes']];
     render(`<div class="topbar">
         <div class="brand"><span class="dot">W</span><span class="hide-sm">Warm-Ups</span></div>
         <nav>${nav.map(([k, l]) => `<a href="#/teacher${k ? '/' + k : ''}" class="${active === k ? 'on' : ''}">${l}</a>`).join('')}</nav>
         <span class="spacer"></span>
-        <a href="#/teacher/profile" class="small" style="font-weight:800;text-decoration:none" title="Edit your name">${esc(this.me ? this.me.display_name : '')}</a>
+        <a href="#/teacher/profile" class="small hide-sm" style="font-weight:800;text-decoration:none" title="Edit your name">${esc(this.me ? this.me.display_name : '')}</a>
         <span class="small muted hide-sm">v${VERSION}</span>
         <button class="link" data-act="signout">Sign out</button>
       </div>
@@ -794,68 +852,86 @@ const Teacher = {
     });
   },
 
-  // ---------- Warm-ups (home) ----------
+  // ---------- Run (home) ----------
   async home() {
-    const [classes, units, sessions] = await Promise.all([
+    const [classes, decks, sessions] = await Promise.all([
       q(sb.from('classes').select('id,name').order('name')),
-      q(sb.from('units').select('id,name,teacher_id,kind').order('name')),
+      Library.loadDecks(),
       q(sb.from('sessions').select('*, classes(name), units(name,kind)').order('created_at', { ascending: false }).limit(60))
     ]);
     const group = st => sessions.filter(s => s.status === st);
     const item = s => `<div class="item">
       <div style="flex:1;min-width:200px">
         <a class="t" href="#/teacher/session/${s.id}">${esc(s.title || s.units?.name || 'Warm-up')}</a>
-        <div class="small muted">${esc(s.classes?.name || '')} · ${esc(s.units?.name || '')} · ${this.settingsText(s)}</div>
+        <div class="small muted">${esc(s.classes?.name || '')} · ${this.settingsText(s)} · ${esc(s.units?.name || '')}</div>
         <div class="small muted">${s.status === 'closed' ? 'Closed ' + fmtDate(s.closed_at) : s.status === 'open' ? 'Opened ' + fmtDate(s.opened_at) : 'Made ' + fmtDate(s.created_at)}</div>
       </div>
       ${s.status === 'ready' ? `<button class="btn primary" data-act="open" data-id="${s.id}" data-class="${s.class_id}">Open now</button>
           <button class="btn danger" data-act="del" data-id="${s.id}">Delete</button>` : ''}
-      ${s.status === 'open' ? `<a class="btn primary" href="#/teacher/session/${s.id}" style="text-decoration:none">Live view</a>` : ''}
+      ${s.status === 'open' ? `<a class="btn primary" href="#/teacher/session/${s.id}" style="text-decoration:none">${s.game === 'zero_in' ? 'Go to game' : 'Live view'}</a>` : ''}
       ${s.status === 'closed' ? `<a class="btn" href="#/teacher/session/${s.id}" style="text-decoration:none">Results</a>` : ''}
     </div>`;
-    const canMake = classes.length && units.length;
+    const pref = store.get('run') || {};
+    const game = DECKS.GAME[pref.game] ? pref.game : DECKS.GAMES[0].id;
     const today = new Date().toLocaleDateString([], { month: 'short', day: 'numeric' });
+    const deckOptions = g => {
+      const kind = DECKS.GAME[g].deck;
+      const ok = decks.filter(d => d.kind === kind && Library.playsFor(kind, d.questions?.[0]?.count ?? 0).length);
+      const folders = [...new Set(ok.map(d => d.folder || ''))].sort((a, b) => (a === '') - (b === '') || a.localeCompare(b));
+      return { count: ok.length, html: folders.map(f => `<optgroup label="${esc(f || 'No folder')}">${ok.filter(d => (d.folder || '') === f)
+        .map(d => `<option value="${d.id}" ${d.id === pref.deck ? 'selected' : ''}>${esc(d.name)} (${d.questions?.[0]?.count ?? 0})${d.teacher_id === this.user.id ? '' : ' — by ' + esc(this.byline(d.teacher_id))}</option>`).join('')}</optgroup>`).join('') };
+    };
+    const deckField = g => {
+      const o = deckOptions(g), t = DECKS.TYPE[DECKS.GAME[g].deck];
+      return o.count ? `<label class="field"><span>Deck <span class="small muted">(${t.icon} ${esc(t.name)} decks)</span></span><select name="deck">${o.html}</select></label>`
+        : `<div class="notice">No ${esc(t.name)} decks yet. <a href="#/teacher/new/${t.id}">Make one in the Library</a>.</div>`;
+    };
     this.shell('', `
-      <h1>Warm-ups</h1>
-      ${canMake ? `<form class="card stack" data-act="create">
-        <h2>Prepare a warm-up</h2>
-        <div class="grid2">
-          <label class="field"><span>Class</span><select name="cls">${classes.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></label>
-          <label class="field"><span>Unit</span><select name="unit" data-change="unitKind">${units.map(u => `<option value="${u.id}" data-kind="${u.kind || 'sentence'}">${u.kind === 'zero_in' ? 'Zero In: ' : ''}${esc(u.name)}${u.teacher_id === this.user.id ? '' : ' \u2014 by ' + esc(this.byline(u.teacher_id))}</option>`).join('')}</select></label>
+      <h1>Run a warm-up</h1>
+      ${classes.length ? `<form class="card stack" data-act="create">
+        <label class="field"><span>Class</span><select name="cls" data-change="pickCls">${classes.map(c => `<option value="${c.id}" ${c.id === pref.cls ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></label>
+        <div class="field"><span class="flabel">Game</span>
+          <div class="game-grid">${DECKS.GAMES.map(g => `<label class="game-card"><input type="radio" name="game" value="${g.id}" ${g.id === game ? 'checked' : ''} data-change="pickGame">
+            <span class="game-body"><span class="game-name">${g.icon} ${esc(g.name)}</span><span class="small muted">${esc(g.blurb)}</span>
+            <span class="small">Plays ${DECKS.TYPE[g.deck].icon} ${esc(DECKS.TYPE[g.deck].name)} decks</span></span></label>`).join('')}</div>
+        </div>
+        <div id="deck-field">${deckField(game)}</div>
+        <div id="sb-opts" class="stack" ${game === 'sentence_builder' ? '' : 'hidden'}>
+          <div class="grid2">
+            <label class="field"><span>Goal: correct answers</span><input type="number" name="target" min="1" max="100" value="8"></label>
+            <label class="field"><span>Time limit (minutes)</span><input type="number" name="mins" min="1" max="120" value="6"></label>
+            <label class="field"><span>Starting level</span><select name="start">${[1, 2, 3, 4, 5].map(n => `<option ${n === 2 ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
+          </div>
+          <p class="small muted">A student finishes when they reach the goal or run out of time, whichever comes first. Leave either blank to turn it off. Closing the warm-up always ends it.</p>
         </div>
         <label class="field"><span>Name (optional)</span><input type="text" name="title" placeholder="e.g. Warm-up ${esc(today)}"></label>
-        <div id="sb-opts" class="stack">
-        <div class="grid2">
-          <label class="field"><span>Goal: correct answers</span><input type="number" name="target" min="1" max="100" value="8"></label>
-          <label class="field"><span>Time limit (minutes)</span><input type="number" name="mins" min="1" max="120" value="6"></label>
-          <label class="field"><span>Starting level</span><select name="start">${[1, 2, 3, 4, 5].map(n => `<option ${n === 2 ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
-        </div>
-        <p class="small muted">A student finishes when they reach the goal or run out of time, whichever comes first. Leave either one blank to turn it off. Closing the warm-up always ends it for everyone.</p>
-        </div>
-        <p id="zi-opts" class="small muted" hidden><b>Zero In:</b> you run it from your screen — pick a word by vote or wheel, then reveal each round when you’re ready.</p>
-        <div class="row"><button class="btn primary" type="submit">Save for later</button>
-          <button class="btn" type="button" data-act="createOpen">Save and open now</button></div>
-      </form>` : `<div class="notice">First, add a <a href="#/teacher/classes">class</a> and a <a href="#/teacher/units">unit</a>.</div>`}
+        <div class="row"><button class="btn primary big" type="button" data-act="createOpen">Open now</button>
+          <button class="btn" type="submit">Save for later</button></div>
+      </form>` : `<div class="notice">First, add a <a href="#/teacher/classes">class</a>. Then make or pick a deck in the <a href="#/teacher/library">Library</a>.</div>`}
       ${group('open').length ? `<div class="section-title">Open now</div><div class="list">${group('open').map(item).join('')}</div>` : ''}
       ${group('ready').length ? `<div class="section-title">Ready to open</div><div class="list">${group('ready').map(item).join('')}</div>` : ''}
       ${group('closed').length ? `<div class="section-title">Recently finished</div><div class="list">${group('closed').slice(0, 6).map(item).join('')}</div>
-        <p class="small muted">Every past warm-up is saved under <a href="#/teacher/classes">Classes \u2192 Results</a>.</p>` : ''}
+        <p class="small muted">Every past warm-up is saved under <a href="#/teacher/classes">Classes → Results</a>.</p>` : ''}
     `, {
-      unitKind: el => {
-        const zi = el.selectedOptions[0] && el.selectedOptions[0].dataset.kind === 'zero_in';
-        document.getElementById('sb-opts').hidden = zi;
-        document.getElementById('zi-opts').hidden = !zi;
+      pickCls: el => store.set('run', Object.assign(store.get('run') || {}, { cls: el.value })),
+      pickGame: el => {
+        store.set('run', Object.assign(store.get('run') || {}, { game: el.value }));
+        document.getElementById('deck-field').innerHTML = deckField(el.value);
+        document.getElementById('sb-opts').hidden = el.value !== 'sentence_builder';
       },
       createOpen: el => {
         const f = el.closest('form');
         if (f.reportValidity()) acts.create(f, null, true);
       },
       create: async (f, e, openNow) => {
-        const zi = f.unit.selectedOptions[0].dataset.kind === 'zero_in';
-        const num = v => (zi || v === '' ? null : Math.max(1, parseInt(v, 10)));
+        const g = f.elements.game.value;
+        if (!f.elements.deck) return toast('Pick a deck first');
+        const sb_ = g === 'sentence_builder';
+        const num = v => (!sb_ || v === '' ? null : Math.max(1, parseInt(v, 10)));
+        store.set('run', { cls: f.cls.value, game: g, deck: f.elements.deck.value });
         try {
           const row = await q(sb.from('sessions').insert({
-            class_id: f.cls.value, unit_id: f.unit.value, title: f.title.value.trim() || null,
+            class_id: f.cls.value, unit_id: f.elements.deck.value, game: g, title: f.elements.title.value.trim() || null,
             target_correct: num(f.target.value), time_limit_min: num(f.mins.value), start_level: +f.start.value
           }).select().single());
           if (openNow) { await this.openSession(row.id, row.class_id); location.hash = '#/teacher/session/' + row.id; }
@@ -871,12 +947,10 @@ const Teacher = {
         try { await q(sb.from('sessions').delete().eq('id', el.dataset.id)); this.home(); } catch (err) { fail(err); }
       }
     });
-    const us = app.querySelector('select[name=unit]');
-    if (us) acts.unitKind(us);
   },
 
   settingsText(s) {
-    if (s.units && s.units.kind === 'zero_in') return 'Zero In';
+    if (s.game === 'zero_in') return 'Zero In';
     const parts = [];
     if (s.target_correct) parts.push('goal ' + s.target_correct + ' correct');
     if (s.time_limit_min) parts.push(s.time_limit_min + ' min');
@@ -893,7 +967,7 @@ const Teacher = {
   // ---------- Live view / results ----------
   async sessionPage(id) {
     const s = await q(sb.from('sessions').select('*, classes(name), units(name,kind)').eq('id', id).single());
-    this._zi = s.units && s.units.kind === 'zero_in';
+    this._zi = s.game === 'zero_in';
     if (this._zi && s.status === 'open') return ZeroIn.host(s);
     const [roster, questions] = await Promise.all([
       q(sb.from('students').select('id,name').eq('class_id', s.class_id).order('name')),
@@ -996,7 +1070,7 @@ const Teacher = {
   drawSession(s, roster, questions, parts) {
     const pill = `<span class="pill ${s.status}">${s.status === 'open' ? 'Open' : s.status === 'ready' ? 'Not open yet' : 'Closed'}</span>`;
     this.shell('', `
-      <p class="small"><a href="#/teacher">← Warm-ups</a> · <a href="#/teacher/class/${s.class_id}">All results for ${esc(s.classes?.name || 'this class')}</a></p>
+      <p class="small"><a href="#/teacher">← Run</a> · <a href="#/teacher/class/${s.class_id}">All results for ${esc(s.classes?.name || 'this class')}</a></p>
       <div class="row"><h1 style="margin:4px 0">${esc(s.title || s.units?.name || 'Warm-up')}</h1>${pill}</div>
       <p class="muted">${esc(s.classes?.name || '')} · ${esc(s.units?.name || '')} · ${this.settingsText(s)}</p>
       <div class="row" style="margin:14px 0">
@@ -1184,151 +1258,6 @@ const Teacher = {
       delclass: async () => {
         if (!confirm(`Delete ${c.name}, its roster, and all its warm-up results?`)) return;
         try { await q(sb.from('classes').delete().eq('id', id)); location.hash = '#/teacher/classes'; } catch (e) { fail(e); }
-      }
-    });
-  },
-
-  // ---------- Units ----------
-  importerHtml(withName) {
-    return `<div class="stack">
-      ${withName ? '<label class="field"><span>Unit name</span><input type="text" name="uname" placeholder="e.g. Unidad 2 – La familia"></label>' : ''}
-      <label class="field"><span>Paste from Google Sheets (select all cells in the tab, copy, paste here)</span>
-        <textarea name="paste" placeholder="level\tspanish\tenglish\talso_accept\tdecoys\tglossary\tnotes"></textarea></label>
-      <label class="field"><span>…or upload the tab as a CSV (File → Download → CSV)</span><input type="file" name="file" accept=".csv,.tsv,.txt,text/csv"></label>
-      <div id="preview" class="small"></div>
-    </div>`;
-  },
-
-  async readImport(f) {
-    let text = f.paste.value;
-    if (!text.trim() && f.file.files[0]) text = await f.file.files[0].text();
-    if (!text.trim()) return { questions: [], errors: ['Paste the sheet or choose a file first.'], kind: 'sentence' };
-    const rows = WU.parseTable(text);
-    if (WU.isZeroInTable(rows)) return Object.assign(WU.rowsToZeroIn(rows), { kind: 'zero_in' });
-    return Object.assign(WU.rowsToQuestions(rows), { kind: 'sentence' });
-  },
-
-  levelCounts(qs) {
-    const n = [0, 0, 0, 0, 0];
-    qs.forEach(x => n[x.level - 1]++);
-    return n;
-  },
-
-  previewHtml(res) {
-    if (res.errors.length) return `<div class="error">${res.errors.map(esc).join('<br>')}</div>`;
-    if (res.kind === 'zero_in') return `<div>Zero In word list — found <b>${res.questions.length}</b> words: ${res.questions.map(x => esc(x.prompt)).join(', ')}</div>`;
-    const n = this.levelCounts(res.questions);
-    const thin = n.some(x => x < 3);
-    return `<div>Found <b>${res.questions.length}</b> questions — ${n.map((x, i) => `L${i + 1}: ${x}`).join(' · ')}</div>
-      ${thin ? '<div class="muted" style="margin-top:4px">Tip: the difficulty steps work best with at least 3 questions at each level.</div>' : ''}`;
-  },
-
-  async units() {
-    const list = await q(sb.from('units').select('id,name,teacher_id,kind,created_at,questions(count)').order('name'));
-    this.shell('units', `
-      <h1>Units</h1>
-      <form class="card stack" data-act="import">
-        <h2>Add a unit from a Google Sheet</h2>
-        <p class="small muted">One tab per unit. Columns: <b>level</b> (1–5), <b>spanish</b>, <b>english</b>, and optional
-          <b>also_accept</b>, <b>decoys</b>, <b>glossary</b>, <b>notes</b>. Separate multiple items with <b>|</b>.
-          <a href="sample-unit.csv" download>Download the template</a> and import it into Google Sheets to start.</p>
-        <p class="small muted"><b>Zero In word lists</b> use different columns: <b>word</b>, <b>r1_correct</b>, <b>r1_wrong1–4</b>, <b>r2_correct</b>, <b>r2_wrong1–3</b>,
-          <b>r3_correct</b> (the definition), <b>r3_wrong1–3</b>, and optional <b>sentence</b> and <b>image</b> (a link). Two right answers in round 1 or 2: <b>Photo / Video</b>.
-          <a href="zero-in-sample.csv" download>Download the Zero In template</a>. The app tells the two kinds apart by their columns.</p>
-        ${this.importerHtml(true)}
-        <div class="row"><button class="btn" type="button" data-act="check">Check sheet</button>
-          <button class="btn primary" type="submit">Add unit</button>
-          <span class="spacer"></span><button class="link" type="button" data-act="sample">Add the Spanish sample</button>
-          <button class="link" type="button" data-act="ziSample">Add the Zero In sample</button></div>
-      </form>
-      <div class="list" style="margin-top:16px">
-        ${list.map(u => `<div class="item"><a class="t" href="#/teacher/unit/${u.id}" style="flex:1">${esc(u.name)}</a>
-          ${u.kind === 'zero_in' ? '<span class="pill">Zero In</span>' : ''}
-          <span class="muted small">${u.questions?.[0]?.count ?? 0} ${u.kind === 'zero_in' ? 'words' : 'questions'} · by ${esc(this.byline(u.teacher_id))}</span></div>`).join('') || '<p class="muted">No units yet.</p>'}
-      </div>`, {
-      check: async () => { const f = app.querySelector('form'); document.getElementById('preview').innerHTML = this.previewHtml(await this.readImport(f)); },
-      import: async f => {
-        const res = await this.readImport(f);
-        document.getElementById('preview').innerHTML = this.previewHtml(res);
-        if (res.errors.length) return;
-        const name = f.uname.value.trim() || (f.file.files[0] ? f.file.files[0].name.replace(/\.[^.]+$/, '') : 'New unit');
-        await this.saveUnit(name, res.questions, res.kind);
-      },
-      sample: async () => {
-        try {
-          const text = await (await fetch('sample-unit.csv', { cache: 'no-store' })).text();
-          const res = WU.rowsToQuestions(WU.parseTable(text));
-          await this.saveUnit('Sample – La familia y la casa', res.questions);
-        } catch (e) { fail(e); }
-      },
-      ziSample: async () => {
-        try {
-          const text = await (await fetch('zero-in-sample.csv', { cache: 'no-store' })).text();
-          const res = WU.rowsToZeroIn(WU.parseTable(text));
-          await this.saveUnit('Comm Tech vocab \u2013 Sample', res.questions, 'zero_in');
-        } catch (e) { fail(e); }
-      }
-    });
-  },
-
-  async saveUnit(name, questions, kind) {
-    try {
-      const u = await q(sb.from('units').insert({ name, kind: kind || 'sentence' }).select().single());
-      await q(sb.from('questions').insert(questions.map(x => Object.assign({ unit_id: u.id }, x))));
-      toast(`Added ${questions.length} ${kind === 'zero_in' ? 'words' : 'questions'}`);
-      location.hash = '#/teacher/unit/' + u.id;
-    } catch (e) { fail(e); }
-  },
-
-  async unitPage(id) {
-    const [u, qs] = await Promise.all([
-      q(sb.from('units').select('id,name,teacher_id,kind').eq('id', id).single()),
-      q(sb.from('questions').select('*').eq('unit_id', id).order('level').order('sort'))
-    ]);
-    const n = this.levelCounts(qs);
-    const zi = u.kind === 'zero_in';
-    const ans = rd => rd ? `<b>${rd.correct.map(esc).join(' / ')}</b><div class="small muted">${rd.wrong.map(esc).join(' \u00B7 ')}</div>` : '';
-    const table = zi ? `<div class="table-wrap"><table>
-        <tr><th>Word</th><th>Round 1</th><th>Round 2</th><th>Definition (round 3)</th><th>Sentence</th></tr>
-        ${qs.map(x => { const r = (x.data && x.data.rounds) || []; return `<tr><td><b>${esc(x.prompt)}</b></td><td>${ans(r[0])}</td><td>${ans(r[1])}</td>
-          <td style="white-space:normal;min-width:220px">${ans(r[2])}</td><td class="small muted" style="white-space:normal">${esc((x.data && x.data.sentence) || '')}</td></tr>`; }).join('')}
-      </table></div>` : null;
-    this.shell('units', `
-      <p class="small"><a href="#/teacher/units">← Units</a></p>
-      <h1>${esc(u.name)}</h1>
-      <p class="muted">${zi ? 'Zero In \u00B7 ' : ''}By ${esc(this.byline(u.teacher_id))} · ${qs.length} ${zi ? 'words' : 'questions · ' + n.map((x, i) => `L${i + 1}: ${x}`).join(' · ')}</p>
-      ${zi ? table : `<div class="table-wrap"><table>
-        <tr><th class="num">Lvl</th><th>Spanish</th><th>English</th><th>Also accept</th><th>Decoys <span class="small">(L4–5)</span></th><th>Word tips</th></tr>
-        ${qs.map(x => `<tr><td class="num">${x.level}</td><td>${esc(x.prompt)}</td><td>${esc(x.answer)}</td>
-          <td class="small">${x.also_accept.map(esc).join('<br>')}</td><td class="small">${x.decoys.map(esc).join(', ')}</td>
-          <td class="small muted">${Object.keys(x.glossary || {}).length || ''}</td></tr>`).join('')}
-      </table></div>`}
-      <details class="card" style="margin-top:20px"><summary><b>Replace these questions from a sheet</b></summary>
-        <form data-act="replace" style="margin-top:12px" class="stack">${this.importerHtml(false)}
-          <div class="row"><button class="btn primary" type="submit">Replace questions</button></div></form>
-      </details>
-      ${u.teacher_id === this.user.id ? '<p style="margin-top:24px"><button class="btn danger" data-act="del">Delete unit</button></p>'
-        : `<p class="small muted" style="margin-top:24px">Shared by ${esc(this.byline(u.teacher_id))}. Any teacher can edit the questions; only ${esc(this.byline(u.teacher_id))} can delete it.</p>`}
-    `, {
-      replace: async f => {
-        const res = await this.readImport(f);
-        document.getElementById('preview').innerHTML = this.previewHtml(res);
-        if (res.errors.length) return;
-        if (res.kind !== (u.kind || 'sentence')) { document.getElementById('preview').innerHTML = `<div class="error">That sheet is a ${res.kind === 'zero_in' ? 'Zero In word list' : 'sentence builder unit'}, but this unit is ${zi ? 'Zero In' : 'a sentence builder'}. Add it as a new unit instead.</div>`; return; }
-        if (!confirm(`Replace all ${qs.length} questions with ${res.questions.length} new ones?`)) return;
-        try {
-          await q(sb.from('questions').delete().eq('unit_id', id));
-          await q(sb.from('questions').insert(res.questions.map(x => Object.assign({ unit_id: id }, x))));
-          toast('Replaced'); this.unitPage(id);
-        } catch (e) { fail(e); }
-      },
-      del: async () => {
-        if (!confirm(`Delete ${u.name}?`)) return;
-        try { await q(sb.from('units').delete().eq('id', id)); location.hash = '#/teacher/units'; }
-        catch (e) {
-          if (e.code === '23503') toast('This unit has been used in warm-ups, so it stays to keep those results.');
-          else fail(e);
-        }
       }
     });
   }
