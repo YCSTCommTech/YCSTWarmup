@@ -327,7 +327,7 @@ fieldset.field input + input { margin-top: 6px; }
 .gzoom .btn { min-width: 36px; padding: 4px 8px; font-size: 1.1rem; }
 .gdirty { font-weight: 800; color: var(--warn); font-size: .9rem; }
 .gscroll { font-size: calc(14px * var(--gz, 1)); overflow: auto; max-height: 72vh; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
-.gtable { table-layout: fixed; border-collapse: separate; border-spacing: 0; }
+.gtable { table-layout: fixed; border-collapse: separate; border-spacing: 0; font-size: 1em; } /* follow the zoom, not the global table size */
 .gtable th, .gtable td { padding: 0; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); vertical-align: top; }
 .gtable th { position: sticky; top: 0; z-index: 2; background: var(--surface-2); font-size: .74em; text-transform: uppercase; letter-spacing: .04em;
   color: var(--muted); text-align: left; padding: .6em .7em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -377,7 +377,7 @@ fieldset.field input + input { margin-top: 6px; }
 <script src="library.js?v=0.6"></script>
 <script>
 'use strict';
-const VERSION = '0.6';
+const VERSION = '0.6.1';
 const C = window.WARMUP_CONFIG || {};
 const CONFIGURED = /^https?:\/\//.test(C.url || '') && C.key && !/^PASTE/.test(C.key);
 const sb = CONFIGURED ? window.supabase.createClient(C.url, C.key) : null;
