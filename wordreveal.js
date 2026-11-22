@@ -154,7 +154,15 @@ const WordReveal = {
     if (!c || !c.shape || !el) return;
     const letters = value.toUpperCase().replace(/[^\p{L}]/gu, '').split('').slice(0, c.letters);
     while (letters.length < c.letters) letters.push('');
-    el.innerHTML = this.tilesRow(letters, null, c.shape, 'preview');
+    // Letters already found in the right spot (green on any board guess).
+    const known = Array(c.letters).fill('');
+    c.guesses.filter(g => g.mode === 'board').forEach(g => g.fb.forEach((f, i) => { if (f === 'hit') known[i] = g.g[i]; }));
+    const shown = [], fb = [];
+    letters.forEach((l, i) => {
+      if (!l && known[i]) { shown.push(known[i]); fb.push('hint'); }       // empty slot: show the found letter faintly
+      else { shown.push(l); fb.push(l && l === known[i] ? 'hit' : ''); } // typed the found letter: solid green
+    });
+    el.innerHTML = this.tilesRow(shown, fb, c.shape, 'preview');
   },
 
   async guess(f) {

@@ -278,6 +278,8 @@ fieldset.field input + input { margin-top: 6px; }
 .wr-tile.near { background: #ca8a04; border-color: #ca8a04; color: #fff; }
 .wr-tile.out { background: var(--muted); border-color: var(--muted); color: #fff; opacity: .75; }
 .wr-row.preview .wr-tile { border-style: dashed; }
+.wr-row.preview .wr-tile.hit { border-style: solid; }
+.wr-row.preview .wr-tile.hint { border-style: solid; border-color: var(--good); color: var(--good); background: var(--good-soft); }
 .wr-form { margin-top: 12px; }
 #wr-preview { margin-bottom: 10px; }
 /* ---------- Zero In ---------- */
@@ -343,11 +345,11 @@ fieldset.field input + input { margin-top: 6px; }
 <script src="logic.js?v=0.5"></script>
 <script src="decks.js?v=0.5"></script>
 <script src="zeroin.js?v=0.5"></script>
-<script src="wordreveal.js?v=0.5"></script>
+<script src="wordreveal.js?v=0.5.1"></script>
 <script src="library.js?v=0.5"></script>
 <script>
 'use strict';
-const VERSION = '0.5';
+const VERSION = '0.5.1';
 const C = window.WARMUP_CONFIG || {};
 const CONFIGURED = /^https?:\/\//.test(C.url || '') && C.key && !/^PASTE/.test(C.key);
 const sb = CONFIGURED ? window.supabase.createClient(C.url, C.key) : null;
