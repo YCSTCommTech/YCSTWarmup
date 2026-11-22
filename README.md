@@ -8,7 +8,7 @@ Adaptive class warm-ups. First module: Spanish sentence builder — students rea
 ## One-time setup (about 10 minutes)
 
 1. **Supabase project.** supabase.com → New project (a new one, separate from JARVIS).
-2. **Database.** SQL Editor → New query → paste all of `schema.sql` → Run. Then do the same with `update-0.2.sql`, `update-0.3.sql`, and `update-0.4.sql`, in that order.
+2. **Database.** SQL Editor → New query → paste all of `schema.sql` → Run. Then do the same with `update-0.2.sql`, `update-0.3.sql`, `update-0.4.sql`, and `update-0.5.sql`, in that order.
 3. **Teacher logins.** Authentication → Users → Add user → Create new user, once per teacher.
    - Email: `lastname@warmup.local` (or a real email). They sign in with just `lastname`.
    - Password: anything. Tick **Auto Confirm User**.
@@ -32,7 +32,7 @@ A deck is a spreadsheet: one row per item. The deck **type** sets the columns, a
 
 | Type | Required columns | Optional columns | Games |
 |---|---|---|---|
-| 📖 Vocabulary | `term, definition` | `category, subcategory, wrong_def1–3, sentence, image` | Zero In · soon: Reverse Wordle, Flashcards, Matching |
+| 📖 Vocabulary | `term, definition` | `category, subcategory, wrong_def1–3, sentence, image` | Zero In, Word Reveal · soon: Flashcards, Matching |
 | 🗣️ Sentence pairs | `level, sentence, translation` | `also_accept, decoys, word_tips, notes` | Sentence Builder · soon: Reverse builder, Listen and type |
 | ☑️ Multiple choice | `question, correct, wrong1` | `wrong2–3, image, explanation, level` | soon: Quiz race, Adaptive quiz |
 | 💡 Prompt and reveal | `prompt, reveal` | `media, constraint` | soon: How would you make it?, Quick write |
@@ -58,6 +58,13 @@ You run it from the board; students answer on their devices.
 
 Wrong answers are built from the deck: category options come from the deck's other categories, subcategory options prefer the same category, and definition options use `wrong_def1–3` if filled, otherwise other terms' definitions. A deck without categories or subcategories just plays fewer rounds.
 
+### Word Reveal (Vocabulary decks)
+Reverse Zero In, self-paced. Each student gets the deck in shuffled order. Clues appear on a timer (default 20 seconds each): **category → subcategory → definition**. After the definition they get one more turn of the timer, then the term is revealed and they move on.
+- **Guessing:** the first two guesses can be any word and show which letters are in the term (yellow). From guess 3, the Wordle board appears with the term's letter count: green = right spot, yellow = wrong spot, gray = not in it.
+- **Points:** solving during clue 1 of 3 = 3 points, clue 2 = 2, definition = 1, time up = 0.
+- **One-word game:** everyone gets the same word (pick one or random); students who solve it wait for the class.
+- **Options:** seconds per clue, optional time limit. All checking happens on the server, so the term never reaches the device until it's solved or missed.
+
 ### Score
 - **Accuracy** = correct ÷ answered · **Goal** = correct ÷ goal (Sentence Builder) · **Points** = sum of the levels of right answers
 - **Classes → Results** shows every warm-up for a class (students × days). "Copy for spreadsheet" copies the grid.
@@ -70,6 +77,8 @@ Wrong answers are built from the deck: category options come from the deck's oth
 - `update-0.2.sql` — teacher profiles, shared units, class results archive
 - `update-0.3.sql` — Zero In
 - `update-0.4.sql` — deck library, folders, game per warm-up
+- `update-0.5.sql` — Word Reveal
+- `wordreveal.js` — Word Reveal student screen
 - `decks.js` — deck types, templates, import/export, AI prompts
 - `library.js` — Library pages
 - `zeroin.js` — Zero In teacher and student screens

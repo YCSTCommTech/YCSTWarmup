@@ -112,11 +112,13 @@
     { id: 'sentence_builder', name: 'Sentence Builder', deck: 'sentence', icon: '🧩',
       blurb: 'Students rebuild the translation from word tiles. Difficulty adapts as they go. Self-paced.' },
     { id: 'zero_in', name: 'Zero In', deck: 'vocab', icon: '🎯',
-      blurb: 'You run it from the board: pick a word, then category → subcategory → definition, revealing each round.' }
+      blurb: 'You run it from the board: pick a word, then category → subcategory → definition, revealing each round.' },
+    { id: 'word_reveal', name: 'Word Reveal', deck: 'vocab', icon: '\uD83D\uDD0E',
+      blurb: 'Reverse Zero In. Clues appear on a timer while students guess the term with Wordle tiles. Self-paced.' }
   ];
   const GAME = Object.fromEntries(GAMES.map(g => [g.id, g]));
   const SOON = {
-    vocab: ['Reverse Wordle', 'Flashcards', 'Matching'],
+    vocab: ['Flashcards', 'Matching'],
     sentence: ['Reverse builder', 'Listen and type'],
     mcq: ['Quiz race', 'Adaptive quiz'],
     prompt: ['How would you make it?', 'Quick write'],
@@ -334,6 +336,11 @@ ${itemsToCsv(type, items)}`;
         if (cats.size < 2) notes.push('add categories (2+ different ones) to get the category round');
         if (!rows.some(r => r.subcategory)) notes.push('add subcategories to get the "more specific" round');
         return { game: g, ok: true, note: notes.length ? 'Plays with fewer rounds — ' + notes.join('; ') + '.' : '' };
+      }
+      if (g.id === 'word_reveal') {
+        if (!items.length) return { game: g, ok: false, note: 'Add at least one term.' };
+        const rows = items.map(it => it.data || {});
+        return { game: g, ok: true, note: rows.some(r => r.category || r.subcategory) ? '' : 'Only the definition will show as a clue \u2014 add categories/subcategories for more clues.' };
       }
       return { game: g, ok: true, note: '' };
     });

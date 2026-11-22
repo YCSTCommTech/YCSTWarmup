@@ -254,6 +254,32 @@ fieldset.field input + input { margin-top: 6px; }
 .game-card input { margin-top: 4px; accent-color: var(--accent); }
 .game-body { display: flex; flex-direction: column; gap: 3px; }
 .game-name { font-weight: 900; font-size: 1.05rem; }
+/* ---------- Word Reveal ---------- */
+.wr-clues { display: grid; gap: 8px; margin: 10px 0 6px; }
+.wr-clue { display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }
+.wr-clue.new { border-color: var(--accent); background: var(--accent-soft); animation: wrIn .4s ease; }
+.wr-clue.locked { opacity: .5; border-style: dashed; }
+@keyframes wrIn { from { transform: translateY(-4px); opacity: 0 } to { transform: none; opacity: 1 } }
+.wr-label { font-size: .72rem; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.wr-text { font-size: 1.12rem; font-weight: 800; line-height: 1.3; }
+.wr-timer { margin: 8px 0 12px; }
+.wr-track { height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.wr-bar { height: 100%; width: 0; background: var(--accent); transition: width .25s linear; }
+.wr-bar.last { background: var(--bad); }
+.wr-disc { margin: 6px 0 10px; display: grid; gap: 6px; }
+.wr-board { display: grid; gap: 6px; margin: 8px 0 12px; }
+.wr-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.wr-row.small-row { justify-content: flex-start; gap: 4px; }
+.wr-word { display: flex; gap: 4px; }
+.wr-tile { width: clamp(24px, 7.2vw, 40px); height: clamp(28px, 8vw, 44px); display: grid; place-items: center; border-radius: 6px;
+  font-weight: 900; font-size: clamp(.9rem, 3.6vw, 1.25rem); border: 2px solid var(--tile-edge); background: var(--tile); color: var(--tile-ink); text-transform: uppercase; }
+.wr-tile.mini { width: 26px; height: 30px; font-size: .9rem; }
+.wr-tile.hit { background: var(--good); border-color: var(--good); color: #fff; }
+.wr-tile.near { background: #ca8a04; border-color: #ca8a04; color: #fff; }
+.wr-tile.out { background: var(--muted); border-color: var(--muted); color: #fff; opacity: .75; }
+.wr-row.preview .wr-tile { border-style: dashed; }
+.wr-form { margin-top: 12px; }
+#wr-preview { margin-bottom: 10px; }
 /* ---------- Zero In ---------- */
 .zi-proj { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
   padding: clamp(18px, 3vw, 36px); min-height: 460px; display: flex; flex-direction: column; }
@@ -314,13 +340,14 @@ fieldset.field input + input { margin-top: 6px; }
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
-<script src="logic.js?v=0.4"></script>
-<script src="decks.js?v=0.4"></script>
-<script src="zeroin.js?v=0.4"></script>
-<script src="library.js?v=0.4"></script>
+<script src="logic.js?v=0.5"></script>
+<script src="decks.js?v=0.5"></script>
+<script src="zeroin.js?v=0.5"></script>
+<script src="wordreveal.js?v=0.5"></script>
+<script src="library.js?v=0.5"></script>
 <script>
 'use strict';
-const VERSION = '0.4';
+const VERSION = '0.5';
 const C = window.WARMUP_CONFIG || {};
 const CONFIGURED = /^https?:\/\//.test(C.url || '') && C.key && !/^PASTE/.test(C.key);
 const sb = CONFIGURED ? window.supabase.createClient(C.url, C.key) : null;
@@ -551,6 +578,7 @@ const Student = {
   begin(token, st) {
     clearTimers();
     if (st.session.game === 'zero_in' || st.session.kind === 'zero_in') return ZeroIn.student(token, st);
+    if (st.session.game === 'word_reveal') return WordReveal.student(token, st);
     const P = this.P = {
       token, name: st.student_name, session: st.session,
       level: st.participant.current_level, c: 0, w: 0,
@@ -883,7 +911,7 @@ const Teacher = {
     };
     const deckField = g => {
       const o = deckOptions(g), t = DECKS.TYPE[DECKS.GAME[g].deck];
-      return o.count ? `<label class="field"><span>Deck <span class="small muted">(${t.icon} ${esc(t.name)} decks)</span></span><select name="deck">${o.html}</select></label>`
+      return o.count ? `<label class="field"><span>Deck <span class="small muted">(${t.icon} ${esc(t.name)} decks)</span></span><select name="deck" data-change="pickDeck">${o.html}</select></label>`
         : `<div class="notice">No ${esc(t.name)} decks yet. <a href="#/teacher/new/${t.id}">Make one in the Library</a>.</div>`;
     };
     this.shell('', `
@@ -904,6 +932,15 @@ const Teacher = {
           </div>
           <p class="small muted">A student finishes when they reach the goal or run out of time, whichever comes first. Leave either blank to turn it off. Closing the warm-up always ends it.</p>
         </div>
+        <div id="wr-opts" class="stack" ${game === 'word_reveal' ? '' : 'hidden'}>
+          <div class="grid2">
+            <label class="field"><span>Seconds per clue</span><input type="number" name="clue_secs" min="5" max="120" value="20"></label>
+            <label class="field"><span>Time limit (minutes, optional)</span><input type="number" name="wrmins" min="1" max="120" placeholder="none"></label>
+          </div>
+          <label class="radio"><input type="checkbox" name="one_word" data-change="pickOneWord"> One-word game \u2014 everyone gets the same word</label>
+          <label class="field" id="wr-word-field" hidden><span>Word</span><select name="word_id"><option value="">Random</option></select></label>
+          <p class="small muted">Students work through the deck in shuffled order. A new clue appears every few seconds; after the definition they get one more turn of the timer, then the word is revealed. Solving earlier earns more points.</p>
+        </div>
         <label class="field"><span>Name (optional)</span><input type="text" name="title" placeholder="e.g. Warm-up ${esc(today)}"></label>
         <div class="row"><button class="btn primary big" type="button" data-act="createOpen">Open now</button>
           <button class="btn" type="submit">Save for later</button></div>
@@ -918,6 +955,17 @@ const Teacher = {
         store.set('run', Object.assign(store.get('run') || {}, { game: el.value }));
         document.getElementById('deck-field').innerHTML = deckField(el.value);
         document.getElementById('sb-opts').hidden = el.value !== 'sentence_builder';
+        document.getElementById('wr-opts').hidden = el.value !== 'word_reveal';
+        acts.pickOneWord();
+      },
+      pickDeck: () => acts.pickOneWord(),
+      pickOneWord: async () => {
+        const f = app.querySelector('form[data-act=create]');
+        const on = f.elements.one_word.checked && f.elements.game.value === 'word_reveal';
+        document.getElementById('wr-word-field').hidden = !on;
+        if (!on || !f.elements.deck) return;
+        const words = await q(sb.from('questions').select('id,prompt').eq('unit_id', f.elements.deck.value).order('prompt'));
+        f.elements.word_id.innerHTML = '<option value="">Random</option>' + words.map(w => `<option value="${w.id}">${esc(w.prompt)}</option>`).join('');
       },
       createOpen: el => {
         const f = el.closest('form');
@@ -926,13 +974,27 @@ const Teacher = {
       create: async (f, e, openNow) => {
         const g = f.elements.game.value;
         if (!f.elements.deck) return toast('Pick a deck first');
-        const sb_ = g === 'sentence_builder';
+        const sb_ = g === 'sentence_builder', wr = g === 'word_reveal';
         const num = v => (!sb_ || v === '' ? null : Math.max(1, parseInt(v, 10)));
         store.set('run', { cls: f.cls.value, game: g, deck: f.elements.deck.value });
         try {
+          let live = {};
+          if (wr) {
+            live = { clue_secs: Math.max(5, parseInt(f.elements.clue_secs.value, 10) || 20), one_word: f.elements.one_word.checked };
+            if (live.one_word) {
+              let id = f.elements.word_id.value;
+              if (!id) {
+                const words = await q(sb.from('questions').select('id').eq('unit_id', f.elements.deck.value));
+                if (!words.length) return toast('That deck has no words');
+                id = words[Math.floor(Math.random() * words.length)].id;
+              }
+              live.word_id = id;
+            }
+          }
+          const wrMins = wr && f.elements.wrmins.value ? Math.max(1, parseInt(f.elements.wrmins.value, 10)) : null;
           const row = await q(sb.from('sessions').insert({
-            class_id: f.cls.value, unit_id: f.elements.deck.value, game: g, title: f.elements.title.value.trim() || null,
-            target_correct: num(f.target.value), time_limit_min: num(f.mins.value), start_level: +f.start.value
+            class_id: f.cls.value, unit_id: f.elements.deck.value, game: g, title: f.elements.title.value.trim() || null, live,
+            target_correct: num(f.target.value), time_limit_min: wr ? wrMins : num(f.mins.value), start_level: +f.start.value
           }).select().single());
           if (openNow) { await this.openSession(row.id, row.class_id); location.hash = '#/teacher/session/' + row.id; }
           else { toast('Saved'); this.home(); }
@@ -951,6 +1013,7 @@ const Teacher = {
 
   settingsText(s) {
     if (s.game === 'zero_in') return 'Zero In';
+    if (s.game === 'word_reveal') return 'Word Reveal' + (s.live && s.live.one_word ? ' (one word)' : '') + (s.time_limit_min ? ' \u00B7 ' + s.time_limit_min + ' min' : '');
     const parts = [];
     if (s.target_correct) parts.push('goal ' + s.target_correct + ' correct');
     if (s.time_limit_min) parts.push(s.time_limit_min + ' min');
@@ -968,6 +1031,7 @@ const Teacher = {
   async sessionPage(id) {
     const s = await q(sb.from('sessions').select('*, classes(name), units(name,kind)').eq('id', id).single());
     this._zi = s.game === 'zero_in';
+    this._wr = s.game === 'word_reveal';
     if (this._zi && s.status === 'open') return ZeroIn.host(s);
     const [roster, questions] = await Promise.all([
       q(sb.from('students').select('id,name').eq('class_id', s.class_id).order('name')),
@@ -1018,7 +1082,7 @@ const Teacher = {
       const main = `<tr class="clickable" data-act="toggle" data-id="${r.st.id}">
         <td><b>${esc(r.st.name)}</b> <span class="small muted">${open ? '▴' : '▾'}</span></td>
         <td class="status ${r.status[1]}">${r.status[0]}</td>
-        <td class="num">${this._zi ? '—' : 'L' + r.p.current_level}</td>
+        <td class="num">${this._zi || this._wr ? '—' : 'L' + r.p.current_level}</td>
         <td class="num">${r.sum.correct} / ${r.sum.total}</td>
         <td class="num">${r.sum.accuracy === null ? '—' : r.sum.accuracy + '%'}</td>
         <td class="num">${r.sum.completion === null ? '—' : r.sum.completion + '%'}</td>
@@ -1026,6 +1090,8 @@ const Teacher = {
         <td class="num small">${last}</td></tr>`;
       const detail = open ? `<tr class="detail"><td colspan="8">${r.p.attempts.length ? `<ol>${r.p.attempts.map(a => {
           const qq = qById.get(a.question_id);
+          if (this._wr) return `<li><span class="${a.correct ? 'ok' : 'no'}">${a.correct ? '✓' : '✗'}</span> ${esc(qq ? qq.prompt : '(deleted word)')}
+            <span class="small muted">${a.correct ? `\u00B7 ${a.level} pt${a.level === 1 ? '' : 's'}` : '\u00B7 ran out of time'}</span></li>`;
           if (this._zi) return `<li><span class="${a.correct ? 'ok' : 'no'}">${a.correct ? '✓' : '✗'}</span> ${esc(qq ? qq.prompt : '(deleted word)')} · Round ${a.level}
             <div class="small muted">Picked: “${esc(a.response)}”</div></li>`;
           return `<li><span class="${a.correct ? 'ok' : 'no'}">${a.correct ? '✓' : '✗'}</span> L${a.level} · ${esc(qq ? qq.prompt : '(deleted question)')}
@@ -1044,7 +1110,7 @@ const Teacher = {
     const acc = all.length ? Math.round(100 * all.filter(a => a.correct).length / all.length) + '%' : '—';
     return `<div class="tiles4">
       <div class="stat"><b>${joined.length}/${roster.length}</b><span>Joined</span></div>
-      ${this._zi ? '' : `<div class="stat"><b>${s.target_correct ? finished.length : '—'}</b><span>Hit the goal</span></div>`}
+      ${this._zi || this._wr ? '' : `<div class="stat"><b>${s.target_correct ? finished.length : '—'}</b><span>Hit the goal</span></div>`}
       <div class="stat"><b>${acc}</b><span>Class accuracy</span></div>
       <div class="stat"><b>${all.length}</b><span>Answers</span></div>
     </div>`;
@@ -1062,8 +1128,8 @@ const Teacher = {
       .sort((a, b) => b[1].miss - a[1].miss || b[1].tries - a[1].tries).slice(0, 5);
     if (!top.length) return '';
     return `<div class="section-title">Most missed</div><div class="table-wrap"><table>
-      <tr><th>${this._zi ? 'Word' : 'Spanish'}</th><th>${this._zi ? 'Definition' : 'English'}</th><th class="num">Missed</th></tr>
-      ${top.map(([id, t]) => { const x = qById.get(id); return `<tr><td>${esc(x.prompt)} ${this._zi ? '' : `<span class="small muted">L${x.level}</span>`}</td><td>${esc(x.answer)}</td><td class="num">${t.miss} of ${t.tries}</td></tr>`; }).join('')}
+      <tr><th>${this._zi || this._wr ? 'Word' : 'Spanish'}</th><th>${this._zi || this._wr ? 'Definition' : 'English'}</th><th class="num">Missed</th></tr>
+      ${top.map(([id, t]) => { const x = qById.get(id); return `<tr><td>${esc(x.prompt)} ${this._zi || this._wr ? '' : `<span class="small muted">L${x.level}</span>`}</td><td>${esc(x.answer)}</td><td class="num">${t.miss} of ${t.tries}</td></tr>`; }).join('')}
     </table></div>`;
   },
 
