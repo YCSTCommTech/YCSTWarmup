@@ -8,7 +8,7 @@ Adaptive class warm-ups. First module: Spanish sentence builder — students rea
 ## One-time setup (about 10 minutes)
 
 1. **Supabase project.** supabase.com → New project (a new one, separate from JARVIS).
-2. **Database.** SQL Editor → New query → paste all of `schema.sql` → Run. Then do the same with `update-0.2.sql`, `update-0.3.sql`, `update-0.4.sql`, and `update-0.5.sql`, in that order.
+2. **Database.** SQL Editor → New query → paste all of `schema.sql` → Run. Then do the same with `update-0.2.sql`, `update-0.3.sql`, `update-0.4.sql`, `update-0.5.sql`, and `update-0.7.sql`, in that order.
 3. **Teacher logins.** Authentication → Users → Add user → Create new user, once per teacher.
    - Email: `lastname@warmup.local` (or a real email). They sign in with just `lastname`.
    - Password: anything. Tick **Auto Confirm User**.
@@ -59,7 +59,7 @@ You run it from the board; students answer on their devices.
 Wrong answers are built from the deck: category options come from the deck's other categories, subcategory options prefer the same category, and definition options use `wrong_def1–3` if filled, otherwise other terms' definitions. A deck without categories or subcategories just plays fewer rounds.
 
 ### Word Reveal (Vocabulary decks)
-Reverse Zero In, self-paced. Each student gets the deck in shuffled order. Clues appear on a timer (default 20 seconds each): **category → subcategory → definition**. After the definition they get one more turn of the timer, then the term is revealed and they move on.
+Reverse Zero In, self-paced. Each student gets the deck in shuffled order. Clues unlock one at a time — **category → subcategory → definition** — on each guess or when the clue's timer runs out (default 20 seconds), whichever comes first. Each clue gets a fresh timer. After the definition they get one more timer window, then the term is revealed and they move on. (Untick "New clue after each guess" on the Run page for timer-only clues.)
 - **Guessing:** the first two guesses can be any word and show which letters are in the term (yellow). From guess 3, the Wordle board appears with the term's letter count: green = right spot, yellow = wrong spot, gray = not in it.
 - **Points:** solving during clue 1 of 3 = 3 points, clue 2 = 2, definition = 1, time up = 0.
 - **One-word game:** everyone gets the same word (pick one or random); students who solve it wait for the class.
@@ -78,6 +78,7 @@ Reverse Zero In, self-paced. Each student gets the deck in shuffled order. Clues
 - `update-0.3.sql` — Zero In
 - `update-0.4.sql` — deck library, folders, game per warm-up
 - `update-0.5.sql` — Word Reveal
+- `update-0.7.sql` — Word Reveal: a guess unlocks the next clue
 - `wordreveal.js` — Word Reveal student screen
 - `decks.js` — deck types, templates, import/export, AI prompts
 - `library.js` — Library pages

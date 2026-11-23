@@ -372,12 +372,12 @@ fieldset.field input + input { margin-top: 6px; }
 <script src="logic.js?v=0.5"></script>
 <script src="decks.js?v=0.5"></script>
 <script src="zeroin.js?v=0.5"></script>
-<script src="wordreveal.js?v=0.5.1"></script>
+<script src="wordreveal.js?v=0.7"></script>
 <script src="grid.js?v=0.6"></script>
 <script src="library.js?v=0.6"></script>
 <script>
 'use strict';
-const VERSION = '0.6.1';
+const VERSION = '0.7';
 const C = window.WARMUP_CONFIG || {};
 const CONFIGURED = /^https?:\/\//.test(C.url || '') && C.key && !/^PASTE/.test(C.key);
 const sb = CONFIGURED ? window.supabase.createClient(C.url, C.key) : null;
@@ -975,9 +975,10 @@ const Teacher = {
             <label class="field"><span>Seconds per clue</span><input type="number" name="clue_secs" min="5" max="120" value="20"></label>
             <label class="field"><span>Time limit (minutes, optional)</span><input type="number" name="wrmins" min="1" max="120" placeholder="none"></label>
           </div>
+          <label class="radio"><input type="checkbox" name="clue_on_guess" checked> New clue after each guess (or when the timer runs out)</label>
           <label class="radio"><input type="checkbox" name="one_word" data-change="pickOneWord"> One-word game \u2014 everyone gets the same word</label>
           <label class="field" id="wr-word-field" hidden><span>Word</span><select name="word_id"><option value="">Random</option></select></label>
-          <p class="small muted">Students work through the deck in shuffled order. A new clue appears every few seconds; after the definition they get one more turn of the timer, then the word is revealed. Solving earlier earns more points.</p>
+          <p class="small muted">Students work through the deck in shuffled order. Each clue gets its own timer; after the definition they get one more timer window, then the word is revealed. Solving on an earlier clue earns more points.</p>
         </div>
         <label class="field"><span>Name (optional)</span><input type="text" name="title" placeholder="e.g. Warm-up ${esc(today)}"></label>
         <div class="row"><button class="btn primary big" type="button" data-act="createOpen">Open now</button>
@@ -1018,7 +1019,7 @@ const Teacher = {
         try {
           let live = {};
           if (wr) {
-            live = { clue_secs: Math.max(5, parseInt(f.elements.clue_secs.value, 10) || 20), one_word: f.elements.one_word.checked };
+            live = { clue_secs: Math.max(5, parseInt(f.elements.clue_secs.value, 10) || 20), one_word: f.elements.one_word.checked, clue_on_guess: f.elements.clue_on_guess.checked };
             if (live.one_word) {
               let id = f.elements.word_id.value;
               if (!id) {

@@ -111,8 +111,9 @@ const WordReveal = {
           ${c.sentence ? `<div class="note">${esc(c.sentence)}</div>` : ''}
           ${s.one_word ? '<p class="small" style="margin:10px 0 0">Wait for the class.</p>' : '<button class="btn big primary" data-act="next" id="wr-nextbtn">Next word →</button>'}</div>`;
       } else {
+        const more = c.clue_on_guess && c.clues.length < c.clue_count ? ' Each guess unlocks the next clue \u2014 but fewer clues = more points.' : '';
         const hint = c.discovery_left > 0
-          ? `Warm-up guess ${3 - c.discovery_left} of 2: type any word to see which letters are in the term.`
+          ? `Warm-up guess ${3 - c.discovery_left} of 2: type any word to see which letters are in the term.${more}`
           : `Guess the term: ${c.letters} letters${c.shape.length > 1 ? ` in ${c.shape.length} words (${c.shape.join(' + ')})` : ''}.`;
         action = `<form data-act="guess" class="wr-form">
           <div class="small muted" style="margin-bottom:6px">${hint}</div>
